@@ -31,8 +31,8 @@ public class Main {
 
     public static void main(String[] args) throws IOException, SetFormatException {
         launcherIcon = ImageIO.read(Main.class.getResourceAsStream("/fifteen.png"));
-        window = new Window(1000, "QBmarker - unilab");
-//        processFile(new File("./dogs.pdf"));
+//        window = new Window(1000, "QBmarker - unilab");
+        processFile(new File("./dogs.pdf"));
 //        for (int i = 0; i < 5; i++) {
 //            window.playermanager.addPlayer("P" + i);
 //        }
@@ -47,28 +47,11 @@ public class Main {
         String text = textStripper.getText(doc);
         doc.close();
 
-        //Match for "tossups"
-        Pattern pattern = Pattern.compile("tossups", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(text);
-        if (!matcher.find()) {
-            throw new SetFormatException("Tossups not found");
-        }
-        int tossupStart = matcher.end();
 
-        //Match for "bonuses"
-        pattern = Pattern.compile("bonuses", Pattern.CASE_INSENSITIVE);
-        matcher = pattern.matcher(text);
-        if (!matcher.find()) {
-            throw new SetFormatException("Bonuses not found");
-        }
-        int bonusStart = matcher.start();
-
-        //Cut down text to tossups only
-        text = text.substring(tossupStart, bonusStart);
 
         //Match for 1-20
-        pattern = Pattern.compile("^([0-9]|[1-2][0-9])\\.", Pattern.MULTILINE);
-        matcher = pattern.matcher(text);
+        Pattern pattern = Pattern.compile("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", Pattern.MULTILINE);
+        Matcher matcher = pattern.matcher(text);
 
         //Hold start index of questions
         ArrayList<Integer> qStart = new ArrayList<>();
@@ -77,7 +60,9 @@ public class Main {
         while (matcher.find()) {
             qStart.add(matcher.start());
             qId.add(Integer.parseInt(matcher.group().replaceAll("[^0-9]", "")));
+//            System.out.println(text.substring(matcher.start(),matcher.start()+10));
         }
+        System.exit(0);
         int size = qStart.size();
         Question[] set = new Question[size];
         for (int i = 0; i < size; i++) {
@@ -85,11 +70,12 @@ public class Main {
             //Raw question
             String rawQuestion = text.substring(qStart.get(i), nextIndex);
             //Remove number
-            rawQuestion = rawQuestion.replaceFirst("^([0-9]|[1-2][0-9])\\.", "");
+            rawQuestion = rawQuestion.replaceFirst("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", "");
             //Split off answer line
             Pattern answerPattern = Pattern.compile("^ANSWER:", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
             Matcher answerMatcher = answerPattern.matcher(rawQuestion);
             if (answerMatcher.find()) {
+                System.out.println(rawQuestion.substring(0, answerMatcher.start()));
                 set[i] = new Question(qId.get(i), rawQuestion.substring(0, answerMatcher.start()), rawQuestion.substring(answerMatcher.start()).split("<", 2)[0]);
             }else{
                 set[i] = new Question(qId.get(i),rawQuestion,"NO ANSWER PROVIDED");
