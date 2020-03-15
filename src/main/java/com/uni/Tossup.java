@@ -1,8 +1,8 @@
 
 package com.uni;
 
-public class Question {
-    public static Question[] questionSet;
+public class Tossup {
+    public static Tossup[] questionSet;
     public static int setidx = -1;
     public int id;
     public QuestionWord[] words;
@@ -10,7 +10,7 @@ public class Question {
     public int size = 0;
     String question, answer;
 
-    public Question(int id, String question, String answer) {
+    public Tossup(int id, String question, String answer) {
         this.id = id;
         this.question = question;
         this.answer = answer;

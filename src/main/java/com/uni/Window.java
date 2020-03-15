@@ -105,7 +105,7 @@ public class Window extends JFrame {
         if (r == JFileChooser.APPROVE_OPTION) {
             try {
                 Main.processFile(filechoose.getSelectedFile());
-                fileStatus.setText("Read " + Question.questionSet.length + " questions from " + filechoose.getSelectedFile().getName());
+                fileStatus.setText("Read " + Tossup.questionSet.length + " questions from " + filechoose.getSelectedFile().getName());
                 //Reset player counts
                 for (String key : PlayerManager.playerList) {
                     PlayerManager.playerData.put(key, new int[]{0, 0, 0, 0});
@@ -120,11 +120,11 @@ public class Window extends JFrame {
     }
 
     public void setQuestion(int idx) {
-        if (idx < 0 || idx >= Question.questionSet.length) {
+        if (idx < 0 || idx >= Tossup.questionSet.length) {
             return;
         }
-        Question.setidx = idx;
-        Question q = Question.questionSet[idx];
+        Tossup.setidx = idx;
+        Tossup q = Tossup.questionSet[idx];
         questionContainer.removeAll();
         for (QuestionWord qw : q.words) {
             questionContainer.add(qw);
@@ -135,15 +135,15 @@ public class Window extends JFrame {
         });
         questionContainer.add(b);
         questionContainer.validate();
-        questionStatus.setText("Tossup " + q.id + " of " + Question.questionSet.length);
+        questionStatus.setText("Tossup " + q.id + " of " + Tossup.questionSet.length);
         repaint();
     }
 
     private void handleKey(int keyCode) {
         if (keyCode == KeyEvent.VK_LEFT) {
-            setQuestion(Question.setidx - 1);
+            setQuestion(Tossup.setidx - 1);
         } else if (keyCode == KeyEvent.VK_RIGHT) {
-            setQuestion(Question.setidx + 1);
+            setQuestion(Tossup.setidx + 1);
         }
     }
 

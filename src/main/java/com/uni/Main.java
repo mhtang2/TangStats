@@ -32,7 +32,8 @@ public class Main {
     public static void main(String[] args) throws IOException, SetFormatException {
         launcherIcon = ImageIO.read(Main.class.getResourceAsStream("/fifteen.png"));
 //        window = new Window(1000, "QBmarker - unilab");
-        processFile(new File("./dogs.pdf"));
+//        processFile(new File("./dogs.pdf"));
+        processFile(new File("./packet1.pdf"));
 //        for (int i = 0; i < 5; i++) {
 //            window.playermanager.addPlayer("P" + i);
 //        }
@@ -40,13 +41,12 @@ public class Main {
     }
 
 
-    //Process pdf file and set list of questions
+    //Process pdf file and questionSet list of questions
     public static void processFile(File file) throws IOException, SetFormatException {
         PDDocument doc = PDDocument.load(file);
         PDFTextStripper textStripper = new PDFTextStripper();
         String text = textStripper.getText(doc);
         doc.close();
-
 
 
         //Match for 1-20
@@ -57,32 +57,61 @@ public class Main {
         ArrayList<Integer> qStart = new ArrayList<>();
         //Hold id of questions
         ArrayList<Integer> qId = new ArrayList<>();
+        //Index of where bonuses start
+        int bonusStart = Integer.MAX_VALUE;
         while (matcher.find()) {
+            int id = Integer.parseInt(matcher.group().replaceAll("[^0-9]", ""));
+            qId.add(id);
+            if (id == 1 && !qStart.isEmpty() && bonusStart == Integer.MAX_VALUE) {
+                bonusStart = qStart.size();
+            }
             qStart.add(matcher.start());
-            qId.add(Integer.parseInt(matcher.group().replaceAll("[^0-9]", "")));
-//            System.out.println(text.substring(matcher.start(),matcher.start()+10));
         }
-        System.exit(0);
         int size = qStart.size();
-        Question[] set = new Question[size];
-        for (int i = 0; i < size; i++) {
+        Tossup[] tossupSet = new Tossup[Math.min(size, bonusStart)];
+        Bonus[] bonusSet = new Bonus[size - Math.min(size, bonusStart)];
+        System.out.println(tossupSet.length + " " + bonusSet.length);
+        //Process tossups
+        for (int i = 0; i < bonusStart; i++) {
             int nextIndex = i < size - 1 ? qStart.get(i + 1) : text.length();
             //Raw question
             String rawQuestion = text.substring(qStart.get(i), nextIndex);
             //Remove number
             rawQuestion = rawQuestion.replaceFirst("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", "");
             //Split off answer line
-            Pattern answerPattern = Pattern.compile("^ANSWER:", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+            Pattern answerPattern = Pattern.compile("^ANSWER:[^a-zA-Z\\d]", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
             Matcher answerMatcher = answerPattern.matcher(rawQuestion);
             if (answerMatcher.find()) {
-                System.out.println(rawQuestion.substring(0, answerMatcher.start()));
-                set[i] = new Question(qId.get(i), rawQuestion.substring(0, answerMatcher.start()), rawQuestion.substring(answerMatcher.start()).split("<", 2)[0]);
-            }else{
-                set[i] = new Question(qId.get(i),rawQuestion,"NO ANSWER PROVIDED");
+                tossupSet[i] = new Tossup(qId.get(i), rawQuestion.substring(0, answerMatcher.start()), rawQuestion.substring(answerMatcher.start()).split("<", 2)[0]);
+            } else {
+                tossupSet[i] = new Tossup(qId.get(i), rawQuestion, "NO ANSWER PROVIDED");
                 System.out.println("Answer formatted incorrectly for q" + qId.get(i));
             }
         }
-        Question.questionSet = set;
+        //Process bonuses
+        for (int i = bonusStart; i < size; i++) {
+            int nextIndex = i < size - 1 ? qStart.get(i + 1) : text.length();
+            //Raw question
+            String rawQuestion = text.substring(qStart.get(i), nextIndex);
+            //Remove number
+            rawQuestion = rawQuestion.replaceFirst("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", "");
+            rawQuestion = rawQuestion.split("<", 2)[0];
+            //Locate [10]
+            int[] tenIdx = new int[3];
+            Pattern tenPattern = Pattern.compile("\\[10]");
+            Matcher tenMatcher = tenPattern.matcher(rawQuestion);
+            for (int j = 0; j < 3; j++) {
+                if (tenMatcher.find()) {
+                } else {
+                    System.out.println("Can't find [10] in q" + qId.get(i));
+                }
+            }
+            //Split off answer line
+            Pattern answerPattern = Pattern.compile("^ANSWER:[^a-zA-Z\\d]", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+            Matcher answerMatcher = answerPattern.matcher(rawQuestion);
+        }
+        Tossup.questionSet = tossupSet;
+        Bonus.questionSet = bonusSet;
     }
 
     //Save data
@@ -121,7 +150,7 @@ public class Main {
                     r2.createCell(i + 1).setCellValue(PlayerManager.playerList.get(i));
                 }
                 int i = 1;
-                for (Question q : Question.questionSet) {
+                for (Tossup q : Tossup.questionSet) {
                     Row pointSheetRow = pointSheet.createRow(i);
                     Row cdepthSheetRow = cdepthSheet.createRow(i);
                     pointSheetRow.setHeight((short) 500);
@@ -135,7 +164,7 @@ public class Main {
                         if (qword.pointValue != 0) {
                             int idx = 1 + PlayerManager.playerList.indexOf(qword.whoBuzzed);
                             pointSheetRow.createCell(idx).setCellValue(qword.pointValue);
-                            cdepthSheetRow.createCell(idx).setCellValue(qword.wordID+"/"+q.size);
+                            cdepthSheetRow.createCell(idx).setCellValue(qword.wordID + "/" + q.size);
                         }
                     }
                     i++;
