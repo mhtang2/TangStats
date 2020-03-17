@@ -4,6 +4,8 @@ package com.uni;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -19,17 +21,27 @@ public class PlayerManager extends JDialog {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Team.teams[0] = new Team("team 1");
-        Team.teams[1] = new Team("team 2");
+        Team.teams[0] = new Team("team 0", 0);
+        Team.teams[1] = new Team("team 1", 1);
 
         setIconImage(Main.launcherIcon);
         setTitle("Manage Players");
         setSize(300, 300);
         setModal(true);
         setLayout(new GridLayout(0, 2));
-        add(Team.teams[0].canvas);
-        add(Team.teams[1].canvas);
+        for (Team team : Team.teams) {
+            add(team.canvas);
+            team.nameField.addKeyListener(new KeyAdapter() {
+                @Override
+                public void keyPressed(KeyEvent e) {
+                    if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                        setVisible(false);
+                    }
+                }
+            });
+        }
         pack();
+        setLocationRelativeTo(null);
 
     }
 

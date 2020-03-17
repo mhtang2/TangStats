@@ -8,6 +8,8 @@ public class Tossup {
     public QuestionWord[] words;
     public int powerMark = 0;
     public int size = 0;
+    //Array of point values
+    static final int[] pointVals = new int[]{15, 10, -5};
     String question, answer;
 
     public Tossup(int id, String question, String answer) {

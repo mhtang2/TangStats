@@ -31,6 +31,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, SetFormatException {
         launcherIcon = ImageIO.read(Main.class.getResourceAsStream("/fifteen.png"));
+        Category.loadCategories("/categories");
         window = new Window(1000, "i read qb questions");
 //        processFile(new File("./dogs.pdf"));
         processFile(new File("./packet1.pdf"));
@@ -68,7 +69,7 @@ public class Main {
             qStart.add(matcher.start());
         }
         int size = qStart.size();
-        bonusStart = Math.min(size,bonusStart);
+        bonusStart = Math.min(size, bonusStart);
         Tossup[] tossupSet = new Tossup[bonusStart];
         Bonus[] bonusSet = new Bonus[size - bonusStart];
         System.out.println(tossupSet.length + " " + bonusSet.length);

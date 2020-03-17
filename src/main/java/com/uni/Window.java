@@ -145,9 +145,6 @@ public class Window extends JFrame {
         }
     }
 
-    //Array of point values
-    int[] pointVals = new int[]{15, 10, -5};
-
     public void updateScoreboard() {
         scoreBoard.removeAll();
         scoreBoard.add(new JLabel("Player"));
@@ -155,15 +152,25 @@ public class Window extends JFrame {
         scoreBoard.add(new JLabel("+10"));
         scoreBoard.add(new JLabel("-5"));
         scoreBoard.add(new JLabel("Point total"));
-        for (int i = 0; i < Team.teams[0].playerList.size(); i++) {
-            String name = Team.teams[0].playerList.get(i);
-            Team.teams[0].playerData.get(name)[3] = 0;
-            scoreBoard.add(new JLabel(name));
+        for (Team team : Team.teams) {
+            //Team stats
+            team.calculateStats();
+            scoreBoard.add(new JLabel(team.name));
             for (int j = 0; j < 3; j++) {
-                Team.teams[0].playerData.get(name)[3] += Team.teams[0].playerData.get(name)[j] * pointVals[j];
-                scoreBoard.add(new JLabel(String.valueOf(Team.teams[0].playerData.get(name)[j])));
+                scoreBoard.add(new JLabel(String.valueOf(team.teamStats[j])));
             }
-            scoreBoard.add(new JLabel(String.valueOf(Team.teams[0].playerData.get(name)[3])));
+            scoreBoard.add(new JLabel(String.valueOf(team.teamStats[3])));
+            //Individual stats
+            for (int i = 0; i < team.playerList.size(); i++) {
+                String name = team.playerList.get(i);
+                team.playerData.get(name)[3] = 0;
+                scoreBoard.add(new JLabel(name));
+                for (int j = 0; j < 3; j++) {
+                    team.playerData.get(name)[3] += team.playerData.get(name)[j] * Tossup.pointVals[j];
+                    scoreBoard.add(new JLabel(String.valueOf(team.playerData.get(name)[j])));
+                }
+                scoreBoard.add(new JLabel(String.valueOf(team.playerData.get(name)[3])));
+            }
         }
         validate();
     }
