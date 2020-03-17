@@ -107,9 +107,7 @@ public class Window extends JFrame {
                 Main.processFile(filechoose.getSelectedFile());
                 fileStatus.setText("Read " + Tossup.questionSet.length + " questions from " + filechoose.getSelectedFile().getName());
                 //Reset player counts
-                for (String key : PlayerManager.playerList) {
-                    PlayerManager.playerData.put(key, new int[]{0, 0, 0, 0});
-                }
+                Team.resetScores();
                 Main.window.updateScoreboard();
                 setQuestion(0);
             } catch (IOException | SetFormatException e1) {
@@ -157,15 +155,15 @@ public class Window extends JFrame {
         scoreBoard.add(new JLabel("+10"));
         scoreBoard.add(new JLabel("-5"));
         scoreBoard.add(new JLabel("Point total"));
-        for (int i = 0; i < PlayerManager.playerList.size(); i++) {
-            String name = PlayerManager.playerList.get(i);
-            PlayerManager.playerData.get(name)[3] = 0;
+        for (int i = 0; i < Team.teams[0].playerList.size(); i++) {
+            String name = Team.teams[0].playerList.get(i);
+            Team.teams[0].playerData.get(name)[3] = 0;
             scoreBoard.add(new JLabel(name));
             for (int j = 0; j < 3; j++) {
-                PlayerManager.playerData.get(name)[3] += PlayerManager.playerData.get(name)[j] * pointVals[j];
-                scoreBoard.add(new JLabel(String.valueOf(PlayerManager.playerData.get(name)[j])));
+                Team.teams[0].playerData.get(name)[3] += Team.teams[0].playerData.get(name)[j] * pointVals[j];
+                scoreBoard.add(new JLabel(String.valueOf(Team.teams[0].playerData.get(name)[j])));
             }
-            scoreBoard.add(new JLabel(String.valueOf(PlayerManager.playerData.get(name)[3])));
+            scoreBoard.add(new JLabel(String.valueOf(Team.teams[0].playerData.get(name)[3])));
         }
         validate();
     }

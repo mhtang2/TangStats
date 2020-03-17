@@ -16,7 +16,7 @@ public class MarkerDialog extends JDialog {
         setModal(true);
         setLocationRelativeTo(qword);
         container.setLayout(new GridLayout(0, 1));
-        for (String name : PlayerManager.playerList) {
+        for (String name : Team.teams[0].playerList) {
             JPanel player = new JPanel();
             player.add(new JLabel(name));
             JButton p10 = new JButton("+10");
@@ -58,7 +58,7 @@ public class MarkerDialog extends JDialog {
             container.add(player);
         }
         update();
-        if (PlayerManager.playerList.isEmpty()) {
+        if (Team.teams[0].playerList.isEmpty() && Team.teams[1].playerList.isEmpty()) {
             container.add(new JLabel("Add more players dawg"));
         }
         add(container);
@@ -66,8 +66,8 @@ public class MarkerDialog extends JDialog {
     }
 
     public void update() {
-        for (int i = 0; i < PlayerManager.playerList.size(); i++) {
-            String name = PlayerManager.playerList.get(i);
+        for (int i = 0; i < Team.teams[0].playerList.size(); i++) {
+            String name = Team.teams[1].playerList.get(i);
             JButton p15 = (JButton) ((JPanel) container.getComponent(i)).getComponent(1);
             JButton p10 = (JButton) ((JPanel) container.getComponent(i)).getComponent(2);
             JButton p5 = (JButton) ((JPanel) container.getComponent(i)).getComponent(3);
