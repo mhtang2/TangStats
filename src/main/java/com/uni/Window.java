@@ -1,5 +1,8 @@
 package com.uni;
 
+import com.uni.question.QuestionWord;
+import com.uni.question.Tossup;
+
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
@@ -161,8 +164,7 @@ public class Window extends JFrame {
             }
             scoreBoard.add(new JLabel(String.valueOf(team.teamStats[3])));
             //Individual stats
-            for (int i = 0; i < team.playerList.size(); i++) {
-                String name = team.playerList.get(i);
+            for (String name: team.activePlayers) {
                 team.playerData.get(name)[3] = 0;
                 scoreBoard.add(new JLabel(name));
                 for (int j = 0; j < 3; j++) {

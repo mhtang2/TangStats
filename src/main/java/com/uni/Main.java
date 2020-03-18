@@ -1,18 +1,14 @@
 package com.uni;
 
+import com.uni.question.Bonus;
+import com.uni.question.Tossup;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -35,9 +31,12 @@ public class Main {
         window = new Window(1000, "i read qb questions");
 //        processFile(new File("./dogs.pdf"));
         processFile(new File("./packet1.pdf"));
-//        for (int i = 0; i < 5; i++) {
-//            window.playermanager.addPlayer("P" + i);
-//        }
+        for (int i = 0; i < 5; i++) {
+            Team.teams[0].nameField.setText("T1 "+i);
+            Team.teams[0].addPlayer();
+            Team.teams[1].nameField.setText("T2 "+i);
+            Team.teams[1].addPlayer();
+        }
         window.setQuestion(0);
     }
 

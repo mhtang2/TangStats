@@ -1,6 +1,6 @@
 package com.uni;
 
-import org.apache.xmlbeans.impl.xb.xsdschema.BlockSet;
+import com.uni.question.Tossup;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,10 +11,10 @@ import java.util.Map;
 
 public class Team {
     static final Color[] teamColors = new Color[]{new Color(0xFFA500), Color.blue};
-    static Team[] teams = new Team[2];
+    public static Team[] teams = new Team[2];
 
     ArrayList<String> playerList = new ArrayList<>();
-    ArrayList<String> activePlayers = new ArrayList<>();
+    public ArrayList<String> activePlayers = new ArrayList<>();
     Map<String, int[]> playerData = new HashMap<>();
 
     //Stuff for adding things in player manager
@@ -47,7 +47,7 @@ public class Team {
 
         changeName.addActionListener((actionEvent) -> {
             String newName = JOptionPane.showInputDialog("New team name: ");
-            if (newName.length() > 0) {
+            if (newName != null && newName.length() > 0) {
                 this.name = newName;
                 teamNameLabel.setText(newName);
                 Main.window.playermanager.updateGraphics();
@@ -55,7 +55,7 @@ public class Team {
         });
     }
 
-    private void addPlayer() {
+    public void addPlayer() {
         String playerName = nameField.getText();
         if (playerName.length() < 1 || playerList.contains(playerName)) {
             JOptionPane.showMessageDialog(null, "Invalid or duplicate player name", "bad player", JOptionPane.INFORMATION_MESSAGE);
@@ -63,6 +63,7 @@ public class Team {
         }
         nameField.setText("");
         playerList.add(playerName);
+        activePlayers.add(playerName);
         playerData.put(playerName, new int[]{0, 0, 0, 0});
 
         JPanel playerContainer = new JPanel();
@@ -91,8 +92,12 @@ public class Team {
                 if (!activePlayers.contains(playerName)) {
                     activePlayers.add(playerName);
                 }
+                togglePlayer.setText("Active");
             } else {
+                activePlayers.remove(playerName);
+                togglePlayer.setText("Inactive");
             }
+            Main.window.playermanager.updateGraphics();
         });
     }
 

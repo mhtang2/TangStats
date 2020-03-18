@@ -1,10 +1,10 @@
-package com.uni;
+package com.uni.question;
 
 public class Bonus {
-    String leadin;
-    String[] q = new String[3];
-    String[] a = new String[3];
-    static Bonus[] questionSet;
+    public String leadin;
+    public String[] q = new String[3];
+    public String[] a = new String[3];
+    public static Bonus[] questionSet;
 
     @Override
     public String toString() {
