@@ -1,7 +1,12 @@
-package com.uni.question;
+package com.uni.marker;
 
 
+import com.uni.Main;
+import com.uni.PlayerManager;
+import com.uni.Team;
+import com.uni.marker.BuzzData;
 import com.uni.marker.MarkerDialog;
+import com.uni.question.Tossup;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,37 +21,34 @@ public class QuestionWord extends JLabel {
 
     public int wordID;
 
+    BuzzData buzzData = new BuzzData(-1, null, -1);
 
-    public void handle(String name, int n, int teamId) {
-       /* if (whoBuzzed != null) {
-            if (pointValue == 15) {
-                PlayerManager.playerData.get(whoBuzzed)[0] -= 1;
-            } else if (pointValue == 10) {
-                PlayerManager.playerData.get(whoBuzzed)[1] -= 1;
-            } else {
-                PlayerManager.playerData.get(whoBuzzed)[2] -= 1;
-            }
+    private void handleClick() {
+        new MarkerDialog(this).query();
+    }
+
+    void handle(BuzzData newData) {
+        if (buzzData.name != null) {
+            Team.teams[buzzData.teamId].playerData.get(buzzData.name)[buzzData.point] -= 1;
         }
-        if (whoBuzzed != null && whoBuzzed.equals(name) && pointValue == n) {
-            whoBuzzed = null;
-            pointValue = 0;
-            defaultBG=Color.white;
+        if (newData.sameData(buzzData)) {
+            buzzData = new BuzzData(-1, null, -1);
+            defaultBG = Color.white;
+            setBackground(defaultBG);
             Main.window.updateScoreboard();
             return;
         }
-        whoBuzzed = name;
-        pointValue = n;
-        if (n == 15) {
-            PlayerManager.playerData.get(name)[0] += 1;
+
+        buzzData = newData;
+        if (newData.point == 0) {
             defaultBG = Color.cyan;
-        } else if (n == 10) {
-            PlayerManager.playerData.get(name)[1] += 1;
+        } else if (newData.point == 1) {
             defaultBG = Color.green;
         } else {
-            PlayerManager.playerData.get(name)[2] += 1;
             defaultBG = Color.red;
         }
-        Main.window.updateScoreboard();*/
+        Team.teams[buzzData.teamId].playerData.get(buzzData.name)[buzzData.point] += 1;
+        Main.window.updateScoreboard();
     }
 
     public QuestionWord(int wordID, String word, Tossup parentQuestion) {
@@ -79,8 +81,5 @@ public class QuestionWord extends JLabel {
         });
     }
 
-    private void handleClick() {
-        new MarkerDialog(this).query();
-    }
 
 }

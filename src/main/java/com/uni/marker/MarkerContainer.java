@@ -1,7 +1,6 @@
 package com.uni.marker;
 
 import com.uni.Team;
-import com.uni.question.QuestionWord;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,6 +15,9 @@ public class MarkerContainer extends JPanel {
         this.qword = qword;
         this.teamId = teamId;
         setLayout(new GridLayout(0, 1));
+        JLabel teamName=  new JLabel(Team.teams[teamId].name);
+        teamName.setForeground(Team.teamColors[teamId]);
+        add(teamName);
         for (String name : Team.teams[teamId].activePlayers) {
             JPanel player = new JPanel();
             player.add(new JLabel(name));
@@ -29,16 +31,16 @@ public class MarkerContainer extends JPanel {
             p10.setBackground(Color.white);
             p5.setBackground(Color.white);
             p15.addActionListener(e -> {
-                qword.handle(name, 0, teamId);
-                update();
+                qword.handle(new BuzzData(0, name, teamId));
+                dialog.update();
             });
             p10.addActionListener(e -> {
-                qword.handle(name, 1, teamId);
-                update();
+                qword.handle(new BuzzData(1, name, teamId));
+                dialog.update();
             });
             p5.addActionListener(e -> {
-                qword.handle(name, 2, teamId);
-                update();
+                qword.handle(new BuzzData(2, name, teamId));
+                dialog.update();
             });
             KeyAdapter ka = new KeyAdapter() {
                 @Override
@@ -57,30 +59,29 @@ public class MarkerContainer extends JPanel {
             player.add(p5);
             add(player);
         }
-        update();
         if (Team.teams[teamId].activePlayers.isEmpty()) {
             add(new JLabel("Add more players dawg"));
         }
     }
 
-    private void update() {
+    void update() {
         for (int i = 0; i < Team.teams[teamId].activePlayers.size(); i++) {
             String name = Team.teams[teamId].activePlayers.get(i);
-            JButton p15 = (JButton) ((JPanel) getComponent(i)).getComponent(1);
-            JButton p10 = (JButton) ((JPanel) getComponent(i)).getComponent(2);
-            JButton p5 = (JButton) ((JPanel) getComponent(i)).getComponent(3);
+            JButton p15 = (JButton) ((JPanel) getComponent(i+1)).getComponent(1);
+            JButton p10 = (JButton) ((JPanel) getComponent(i+1)).getComponent(2);
+            JButton p5 = (JButton) ((JPanel) getComponent(i+1)).getComponent(3);
             p15.setBackground(Color.white);
             p10.setBackground(Color.white);
             p5.setBackground(Color.white);
-           /* if (name.equals(qword.whoBuzzed)) {
-                if (qword.pointValue == 15) {
+            if (qword.buzzData.samePerson(name, teamId)) {
+                if (qword.buzzData.point == 0) {
                     p15.setBackground(Color.gray);
-                } else if (qword.pointValue == 10) {
+                } else if (qword.buzzData.point == 1) {
                     p10.setBackground(Color.gray);
-                } else if (qword.pointValue == -5) {
+                } else if (qword.buzzData.point == 2) {
                     p5.setBackground(Color.gray);
                 }
-            }*/
+            }
         }
     }
 }

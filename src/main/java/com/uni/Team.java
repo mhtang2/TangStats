@@ -1,6 +1,6 @@
 package com.uni;
 
-import com.uni.question.Tossup;
+import com.uni.marker.BuzzData;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,20 +10,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Team {
-    static final Color[] teamColors = new Color[]{new Color(0xFFA500), Color.blue};
+    public static final Color[] teamColors = new Color[]{new Color(0xFFA500), Color.blue};
     public static Team[] teams = new Team[2];
 
-    ArrayList<String> playerList = new ArrayList<>();
+    public ArrayList<String> playerList = new ArrayList<>();
     public ArrayList<String> activePlayers = new ArrayList<>();
-    Map<String, int[]> playerData = new HashMap<>();
+    public Map<String, int[]> playerData = new HashMap<>();
 
     //Stuff for adding things in player manager
     JPanel canvas = new JPanel();
     JTextField nameField = new JTextField(20);
-    String name;
+    public String name;
     int[] teamStats = new int[]{0, 0, 0, 0};
     //0 or 1 value
-    int teamId;
+    private int teamId;
 
     Team(String name, int teamId) {
         this.name = name;
@@ -102,6 +102,7 @@ public class Team {
     }
 
     void calculateStats() {
+        teamStats = new int[]{0,0,0,0};
         for (String key : playerList) {
             int[] playerstats = playerData.get(key);
             for (int i = 0; i < 3; i++) {
@@ -110,7 +111,7 @@ public class Team {
             //Calculate total
             teamStats[3] = 0;
             for (int j = 0; j < 3; j++) {
-                teamStats[3] += teamStats[j] * Tossup.pointVals[j];
+                teamStats[3] += teamStats[j] * BuzzData.pointVals[j];
             }
         }
     }

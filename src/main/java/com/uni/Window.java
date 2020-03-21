@@ -1,6 +1,9 @@
 package com.uni;
 
-import com.uni.question.QuestionWord;
+import com.uni.marker.BuzzData;
+import com.uni.marker.QuestionWord;
+import com.uni.question.Bonus;
+import com.uni.question.Category;
 import com.uni.question.Tossup;
 
 import javax.swing.*;
@@ -13,6 +16,9 @@ import java.io.IOException;
 public class Window extends JFrame {
     final static double SCREEN_RES = 1.61;
     final static Font defFont = new Font("Open Sans", 0, 15);
+    final static Color buttonColor = new Color(0xe3e3e3);
+
+    private boolean tossupMode = true;
 
     public PlayerManager playermanager = new PlayerManager();
     private JLabel fileStatus = new JLabel("No file selected");
@@ -20,6 +26,9 @@ public class Window extends JFrame {
     private JPanel questionContainer = new JPanel();
     private JFileChooser filechoose = new JFileChooser(new File("./"));
     private JPanel scoreBoard = new JPanel();
+
+    private JComboBox<Category> categorySelect = new JComboBox<>(Category.categories);
+    private JComboBox<String> subcategorySelect = new JComboBox<>(new String[]{null});
 
     public Window(int base, String title) {
         //Close operation confirm
@@ -41,14 +50,17 @@ public class Window extends JFrame {
         setVisible(true);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
+
         //Container for file open
         JPanel selectContainer = new JPanel();
         JButton playersButton = new JButton("Manage Players");
         JButton selectButton = new JButton("Select packet");
+        playersButton.setBackground(buttonColor);
+        selectButton.setBackground(buttonColor);
         playersButton.addActionListener(e -> playermanager.setVisible(true));
         selectButton.addActionListener(e -> openSet());
         fileStatus.setFont(defFont);
-        fileStatus.setVerticalAlignment(0);
+        fileStatus.setVerticalAlignment(SwingConstants.CENTER);
 
         selectContainer.add(playersButton);
         selectContainer.add(selectButton);
@@ -56,13 +68,52 @@ public class Window extends JFrame {
 
         //Container for controller
         JButton saveButton = new JButton("Save data");
+        saveButton.setBackground(buttonColor);
         saveButton.addActionListener(e -> Main.saveData(filechoose));
         JPanel controlContainer = new JPanel();
         controlContainer.setBackground(Color.lightGray);
         questionStatus.setFont(defFont);
-        questionStatus.setVerticalAlignment(0);
+        questionStatus.setVerticalAlignment(SwingConstants.CENTER);
         controlContainer.add(questionStatus);
         controlContainer.add(saveButton);
+
+        //Container for category selection
+        JPanel categoryContainer = new JPanel();
+        categoryContainer.add(new JLabel("Category: "));
+        categoryContainer.add(categorySelect);
+        categoryContainer.add(new JLabel("Subcategory: "));
+        categoryContainer.add(subcategorySelect);
+        categorySelect.addActionListener(e -> {
+            Category selected = ((Category) categorySelect.getSelectedItem());
+            Tossup.questionSet[Tossup.setidx].category = selected;
+            if (selected != null) {
+                subcategorySelect.setModel(new DefaultComboBoxModel<>(selected.subcategories));
+            } else {
+                subcategorySelect.setModel(new DefaultComboBoxModel<>(new String[]{null}));
+            }
+            questionContainer.grabFocus();
+        });
+        subcategorySelect.addActionListener(e -> {
+            Tossup.questionSet[Tossup.setidx].subcategory = (String) subcategorySelect.getSelectedItem();
+            questionContainer.grabFocus();
+        });
+
+        //Container for toggling bonus
+        JPanel toggleContainer = new JPanel();
+        JButton toggleButton = new JButton("Show Bonus/Tossup");
+        toggleButton.setBackground(buttonColor);
+        JLabel teamControlLabel = new JLabel("No Bonus Control");
+        teamControlLabel.setFont(defFont);
+        toggleContainer.add(teamControlLabel);
+        toggleContainer.add(toggleButton);
+        toggleButton.addActionListener(e -> {
+            if (tossupMode) {
+                //TODO: go bonuses
+            } else {
+
+            }
+            tossupMode = !tossupMode;
+        });
 
         //Container for question
         questionContainer.setBackground(Color.white);
@@ -83,10 +134,20 @@ public class Window extends JFrame {
             }
         });
 
-        //Main containers
-        JPanel topContainer = new JPanel(new GridLayout(1, 2));
-        topContainer.add(selectContainer);
-        topContainer.add(controlContainer);
+        //Top Container
+        JPanel topContainer = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weightx = 1;
+        gbc.gridx = 0;
+        topContainer.add(selectContainer, gbc);
+        gbc.gridx = 1;
+        topContainer.add(controlContainer, gbc);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        topContainer.add(categoryContainer, gbc);
+        gbc.gridx = 1;
+        topContainer.add(toggleContainer, gbc);
 
         //Scoreboard
         scoreBoard.setLayout(new GridLayout(0, 5));
@@ -120,17 +181,28 @@ public class Window extends JFrame {
         }
     }
 
+    private void setBonus(int idx) {
+        if (idx < 0 || idx >= Bonus.questionSet.length) {
+            return;
+        }
+        Bonus.setIdx = idx;
+        Bonus bonus = Bonus.questionSet[idx];
+    }
+
     public void setQuestion(int idx) {
         if (idx < 0 || idx >= Tossup.questionSet.length) {
             return;
         }
         Tossup.setidx = idx;
         Tossup q = Tossup.questionSet[idx];
+        categorySelect.setSelectedItem(q.category);
+        subcategorySelect.setSelectedItem(q.subcategory);
         questionContainer.removeAll();
         for (QuestionWord qw : q.words) {
             questionContainer.add(qw);
         }
         JButton b = new JButton("Show answer");
+        b.setBackground(buttonColor);
         b.addActionListener(e -> {
             JOptionPane.showMessageDialog(null, q.answer, "Answer", JOptionPane.INFORMATION_MESSAGE);
         });
@@ -164,11 +236,11 @@ public class Window extends JFrame {
             }
             scoreBoard.add(new JLabel(String.valueOf(team.teamStats[3])));
             //Individual stats
-            for (String name: team.activePlayers) {
+            for (String name : team.activePlayers) {
                 team.playerData.get(name)[3] = 0;
                 scoreBoard.add(new JLabel(name));
                 for (int j = 0; j < 3; j++) {
-                    team.playerData.get(name)[3] += team.playerData.get(name)[j] * Tossup.pointVals[j];
+                    team.playerData.get(name)[3] += team.playerData.get(name)[j] * BuzzData.pointVals[j];
                     scoreBoard.add(new JLabel(String.valueOf(team.playerData.get(name)[j])));
                 }
                 scoreBoard.add(new JLabel(String.valueOf(team.playerData.get(name)[3])));

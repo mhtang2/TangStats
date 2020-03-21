@@ -1,7 +1,7 @@
 
 package com.uni.question;
 
-import com.uni.Category;
+import com.uni.marker.QuestionWord;
 
 public class Tossup {
     public static Tossup[] questionSet;
@@ -9,17 +9,15 @@ public class Tossup {
 
     public int id;
     public QuestionWord[] words;
-    public int powerMark = 0;
-    public int size = 0;
-    Category category = null;
-    String subcategory = null;
+    private int powerMark = 0;
+    private int size = 0;
+    public Category category = null;
+    public String subcategory = null;
 
     //Hold team buzz data
-    String whoBuzzed[] = new String[]{null, null};
-    int pointValue[] = new int[]{0, 0};
-
-    //Array of point values
-    public static final int[] pointVals = new int[]{15, 10, -5};
+//    String whoBuzzed[] = new String[]{null, null};
+//    int pointValue[] = new int[]{0, 0};
+    int controllingTeam = -1;
     String question;
     public String answer;
 

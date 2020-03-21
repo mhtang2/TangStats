@@ -1,6 +1,7 @@
 package com.uni;
 
 import com.uni.question.Bonus;
+import com.uni.question.Category;
 import com.uni.question.Tossup;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
