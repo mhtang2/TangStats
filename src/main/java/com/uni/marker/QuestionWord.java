@@ -14,14 +14,14 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class QuestionWord extends JLabel {
-    static Font font = new Font(Font.SERIF, Font.PLAIN, 20);
+    public static Font font = new Font(Font.SERIF, Font.PLAIN, 20);
     private Tossup parentQuestion;
     private Color defaultBG = Color.white;
     private final Color hoverBG = Color.lightGray;
 
     public int wordID;
 
-    BuzzData buzzData = new BuzzData(-1, null, -1);
+    public BuzzData buzzData = new BuzzData(-1, null, -1);
 
     private void handleClick() {
         new MarkerDialog(this).query();
@@ -33,20 +33,36 @@ public class QuestionWord extends JLabel {
         }
         if (newData.sameData(buzzData)) {
             buzzData = new BuzzData(-1, null, -1);
+            if (newData.point == 0 || newData.point == 1) parentQuestion.setControllingTeam(-1);
             defaultBG = Color.white;
             setBackground(defaultBG);
             Main.window.updateScoreboard();
             return;
         }
 
+        //Handle setting question control
+        if (newData.point == 2 && buzzData != null) {
+            //neg
+            buzzData.point = 2;
+            parentQuestion.setControllingTeam(-1);
+        } else {
+            if ((buzzData.name == null || buzzData.point == 2) && parentQuestion.controllingTeam > -1) {
+                JOptionPane.showMessageDialog(null, "Warning: You just marked multiple correct buzzes", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+            parentQuestion.setControllingTeam(newData.teamId);
+        }
+
+        //Process buzz
         buzzData = newData;
         if (newData.point == 0) {
             defaultBG = Color.cyan;
         } else if (newData.point == 1) {
             defaultBG = Color.green;
-        } else {
+        } else if (newData.point == 2) {
             defaultBG = Color.red;
         }
+        setBackground(defaultBG);
+
         Team.teams[buzzData.teamId].playerData.get(buzzData.name)[buzzData.point] += 1;
         Main.window.updateScoreboard();
     }

@@ -55,7 +55,7 @@ public class Team {
         });
     }
 
-    public void addPlayer() {
+    void addPlayer() {
         String playerName = nameField.getText();
         if (playerName.length() < 1 || playerList.contains(playerName)) {
             JOptionPane.showMessageDialog(null, "Invalid or duplicate player name", "bad player", JOptionPane.INFORMATION_MESSAGE);
@@ -102,7 +102,7 @@ public class Team {
     }
 
     void calculateStats() {
-        teamStats = new int[]{0,0,0,0};
+        teamStats = new int[]{0, 0, 0, 0};
         for (String key : playerList) {
             int[] playerstats = playerData.get(key);
             for (int i = 0; i < 3; i++) {

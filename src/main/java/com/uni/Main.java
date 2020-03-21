@@ -33,12 +33,12 @@ public class Main {
 //        processFile(new File("./dogs.pdf"));
         processFile(new File("./packet1.pdf"));
         for (int i = 0; i < 5; i++) {
-            Team.teams[0].nameField.setText("T1 "+i);
+            Team.teams[0].nameField.setText("T1 " + i);
             Team.teams[0].addPlayer();
-            Team.teams[1].nameField.setText("T2 "+i);
+            Team.teams[1].nameField.setText("T2 " + i);
             Team.teams[1].addPlayer();
         }
-        window.setQuestion(0);
+        window.setTossup(0);
     }
 
 
@@ -79,7 +79,7 @@ public class Main {
             //Raw question
             String rawQuestion = text.substring(qStart.get(i), nextIndex);
             //Remove number
-            rawQuestion = rawQuestion.replaceFirst("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", "");
+//            rawQuestion = rawQuestion.replaceFirst("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", "");
             //Split off answer line
             Pattern answerPattern = Pattern.compile("^ANSWER:[^a-zA-Z\\d]", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
             Matcher answerMatcher = answerPattern.matcher(rawQuestion);
@@ -97,7 +97,7 @@ public class Main {
             //Raw question
             String rawQuestion = text.substring(qStart.get(qi), nextIndex);
             //Remove number
-            rawQuestion = rawQuestion.replaceFirst("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", "");
+//            rawQuestion = rawQuestion.replaceFirst("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", "");
             rawQuestion = rawQuestion.split("<", 2)[0];
 
             //Locate [10]s
@@ -127,6 +127,7 @@ public class Main {
                 bonus.q[i] = rawQuestion.substring(tenIdx[i], answerIdx[i]);
                 bonus.a[i] = rawQuestion.substring(answerIdx[i], i < 2 ? tenIdx[i + 1] : rawQuestion.length());
             }
+            bonusSet[qi-bonusStart] = bonus;
         }
         Tossup.questionSet = tossupSet;
         Bonus.questionSet = bonusSet;

@@ -3,9 +3,9 @@ package com.uni.marker;
 public class BuzzData {
     //Array of point values
     public static final int[] pointVals = new int[]{15, 10, -5};
-    int point;
-    String name;
-    int teamId;
+    public int point;
+    public String name;
+    public int teamId;
 
     BuzzData(int point, String name, int teamId) {
         this.point = point;

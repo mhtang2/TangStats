@@ -12,6 +12,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Window extends JFrame {
     final static double SCREEN_RES = 1.61;
@@ -23,6 +24,8 @@ public class Window extends JFrame {
     public PlayerManager playermanager = new PlayerManager();
     private JLabel fileStatus = new JLabel("No file selected");
     private JLabel questionStatus = new JLabel("Tossup 0 of 0");
+    private JLabel teamControlLabel = new JLabel("No Bonus Control");
+    private JCheckBox deadToggle = new JCheckBox("Dead: ");
     private JPanel questionContainer = new JPanel();
     private JFileChooser filechoose = new JFileChooser(new File("./"));
     private JPanel scoreBoard = new JPanel();
@@ -85,7 +88,11 @@ public class Window extends JFrame {
         categoryContainer.add(subcategorySelect);
         categorySelect.addActionListener(e -> {
             Category selected = ((Category) categorySelect.getSelectedItem());
-            Tossup.questionSet[Tossup.setidx].category = selected;
+            if (tossupMode) {
+                Tossup.questionSet[Tossup.setidx].category = selected;
+            } else {
+                Bonus.questionSet[Bonus.setidx].category = selected;
+            }
             if (selected != null) {
                 subcategorySelect.setModel(new DefaultComboBoxModel<>(selected.subcategories));
             } else {
@@ -94,26 +101,40 @@ public class Window extends JFrame {
             questionContainer.grabFocus();
         });
         subcategorySelect.addActionListener(e -> {
-            Tossup.questionSet[Tossup.setidx].subcategory = (String) subcategorySelect.getSelectedItem();
+            if (tossupMode) {
+                Tossup.questionSet[Tossup.setidx].subcategory = (String) subcategorySelect.getSelectedItem();
+            } else {
+                Bonus.questionSet[Bonus.setidx].subcategory = (String) subcategorySelect.getSelectedItem();
+            }
             questionContainer.grabFocus();
         });
 
         //Container for toggling bonus
         JPanel toggleContainer = new JPanel();
-        JButton toggleButton = new JButton("Show Bonus/Tossup");
+        JButton toggleButton = new JButton("Show/Hide Bonus");
         toggleButton.setBackground(buttonColor);
-        JLabel teamControlLabel = new JLabel("No Bonus Control");
         teamControlLabel.setFont(defFont);
+        deadToggle.setSelected(true);
+        toggleContainer.add(deadToggle);
         toggleContainer.add(teamControlLabel);
         toggleContainer.add(toggleButton);
+
+        deadToggle.addActionListener(e -> {
+            Tossup.questionSet[Tossup.setidx].dead = deadToggle.isSelected();
+        });
         toggleButton.addActionListener(e -> {
             if (tossupMode) {
-                //TODO: go bonuses
+                if (deadToggle.isSelected()) {
+                    JOptionPane.showMessageDialog(null, "Can't show bonus for dead tossup", "Warning", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+                setBonus(Tossup.getCorrespondingBonus());
             } else {
-
+                setTossup(Tossup.setidx);
             }
             tossupMode = !tossupMode;
         });
+
 
         //Container for question
         questionContainer.setBackground(Color.white);
@@ -130,7 +151,6 @@ public class Window extends JFrame {
             @Override
             public void keyPressed(KeyEvent e) {
                 handleKey(e.getKeyCode());
-
             }
         });
 
@@ -138,7 +158,7 @@ public class Window extends JFrame {
         JPanel topContainer = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.BOTH;
-        gbc.weightx = 1;
+        gbc.weightx = 0.5;
         gbc.gridx = 0;
         topContainer.add(selectContainer, gbc);
         gbc.gridx = 1;
@@ -173,7 +193,7 @@ public class Window extends JFrame {
                 //Reset player counts
                 Team.resetScores();
                 Main.window.updateScoreboard();
-                setQuestion(0);
+                setTossup(0);
             } catch (IOException | SetFormatException e1) {
                 fileStatus.setText("Error reading");
                 e1.printStackTrace();
@@ -185,19 +205,54 @@ public class Window extends JFrame {
         if (idx < 0 || idx >= Bonus.questionSet.length) {
             return;
         }
-        Bonus.setIdx = idx;
+        Bonus.setidx = idx;
         Bonus bonus = Bonus.questionSet[idx];
+        categorySelect.setSelectedItem(bonus.category);
+        subcategorySelect.setSelectedItem(bonus.subcategory);
+        questionContainer.removeAll();
+        questionContainer.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        JTextArea leadIn = new JTextArea(bonus.leadin);
+        leadIn.setFont(defFont);
+        gbc.weightx = 1.0;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        questionContainer.add(leadIn, gbc);
+        for (int c = 0; c < 3; c++) {
+            int i = c;
+            gbc.gridy = i + 1;
+            gbc.gridx = 0;
+            JTextArea q = new JTextArea(bonus.q[i] + bonus.a[i]);
+            q.setFont(defFont);
+            q.setEditable(false);
+
+            JComboBox<String> choose = new JComboBox<>(new String[]{"Dead", Team.teams[0].name, Team.teams[1].name});
+            choose.addActionListener(e -> {
+                @SuppressWarnings("unchecked")
+                int s = ((JComboBox<String>) e.getSource()).getSelectedIndex() - 1;
+                Bonus.questionSet[Bonus.setidx].score[i] = s;
+            });
+            questionContainer.add(q, gbc);
+            gbc.gridx = 1;
+            questionContainer.add(choose, gbc);
+        }
+        repaint();
     }
 
-    public void setQuestion(int idx) {
+    public void setTossup(int idx) {
         if (idx < 0 || idx >= Tossup.questionSet.length) {
             return;
         }
         Tossup.setidx = idx;
         Tossup q = Tossup.questionSet[idx];
+        //Set selected values for tossup
         categorySelect.setSelectedItem(q.category);
         subcategorySelect.setSelectedItem(q.subcategory);
+        setControllingTeam(q.controllingTeam);
+        deadToggle.setSelected(q.dead);
+
         questionContainer.removeAll();
+        questionContainer.setLayout(new FlowLayout());
         for (QuestionWord qw : q.words) {
             questionContainer.add(qw);
         }
@@ -214,9 +269,9 @@ public class Window extends JFrame {
 
     private void handleKey(int keyCode) {
         if (keyCode == KeyEvent.VK_LEFT) {
-            setQuestion(Tossup.setidx - 1);
+            setTossup(Tossup.setidx - 1);
         } else if (keyCode == KeyEvent.VK_RIGHT) {
-            setQuestion(Tossup.setidx + 1);
+            setTossup(Tossup.setidx + 1);
         }
     }
 
@@ -247,6 +302,19 @@ public class Window extends JFrame {
             }
         }
         validate();
+    }
+
+    public void setControllingTeam(int control) {
+        deadToggle.setSelected(control < 0);
+        if (control < 0) {
+            teamControlLabel.setText("No Bonus Control");
+            teamControlLabel.setForeground(Color.black);
+            return;
+        }
+        String name = Team.teams[control].name;
+        teamControlLabel.setText("Control: " + name);
+        teamControlLabel.setForeground(Team.teamColors[control]);
+        repaint();
     }
 }
 
