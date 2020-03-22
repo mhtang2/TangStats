@@ -6,6 +6,7 @@ import com.uni.question.Bonus;
 import com.uni.question.Category;
 import com.uni.question.Tossup;
 
+import javax.sound.midi.Soundbank;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
@@ -72,7 +73,7 @@ public class Window extends JFrame {
         //Container for controller
         JButton saveButton = new JButton("Save data");
         saveButton.setBackground(buttonColor);
-        saveButton.addActionListener(e -> Main.saveData(filechoose));
+        saveButton.addActionListener(e -> ExportData.saveData(filechoose));
         JPanel controlContainer = new JPanel();
         controlContainer.setBackground(Color.lightGray);
         questionStatus.setFont(defFont);
@@ -89,7 +90,7 @@ public class Window extends JFrame {
         categorySelect.addActionListener(e -> {
             Category selected = ((Category) categorySelect.getSelectedItem());
             if (tossupMode) {
-                Tossup.questionSet[Tossup.setidx].category = selected;
+                Tossup.current().category = selected;
             } else {
                 Bonus.questionSet[Bonus.setidx].category = selected;
             }
@@ -102,7 +103,7 @@ public class Window extends JFrame {
         });
         subcategorySelect.addActionListener(e -> {
             if (tossupMode) {
-                Tossup.questionSet[Tossup.setidx].subcategory = (String) subcategorySelect.getSelectedItem();
+                Tossup.current().subcategory = (String) subcategorySelect.getSelectedItem();
             } else {
                 Bonus.questionSet[Bonus.setidx].subcategory = (String) subcategorySelect.getSelectedItem();
             }
@@ -120,7 +121,7 @@ public class Window extends JFrame {
         toggleContainer.add(toggleButton);
 
         deadToggle.addActionListener(e -> {
-            Tossup.questionSet[Tossup.setidx].dead = deadToggle.isSelected();
+            Tossup.current().dead = deadToggle.isSelected();
         });
         toggleButton.addActionListener(e -> {
             if (tossupMode) {
@@ -239,10 +240,11 @@ public class Window extends JFrame {
         repaint();
     }
 
-    public void setTossup(int idx) {
+    public boolean setTossup(int idx) {
         if (idx < 0 || idx >= Tossup.questionSet.length) {
-            return;
+            return false;
         }
+
         Tossup.setidx = idx;
         Tossup q = Tossup.questionSet[idx];
         //Set selected values for tossup
@@ -265,6 +267,7 @@ public class Window extends JFrame {
         questionContainer.validate();
         questionStatus.setText("Tossup " + q.id + " of " + Tossup.questionSet.length);
         repaint();
+        return true;
     }
 
     private void handleKey(int keyCode) {
@@ -291,7 +294,11 @@ public class Window extends JFrame {
             }
             scoreBoard.add(new JLabel(String.valueOf(team.teamStats[3])));
             //Individual stats
-            for (String name : team.activePlayers) {
+            //Get active player
+            Tossup currentQ = Tossup.current();
+            if (currentQ == null) continue;
+            String[] activePlayers = team.teamId == 0 ? currentQ.t1Active : currentQ.t2Active;
+            for (String name : activePlayers) {
                 team.playerData.get(name)[3] = 0;
                 scoreBoard.add(new JLabel(name));
                 for (int j = 0; j < 3; j++) {

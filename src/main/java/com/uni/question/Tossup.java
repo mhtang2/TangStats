@@ -20,11 +20,13 @@ public class Tossup {
     public QuestionWord[] words;
     private int powerMark = 0;
     private int size = 0;
+
     public Category category = null;
     public String subcategory = null;
-
     public int controllingTeam = -1;
     public boolean dead = true;
+    public String[] t1Active = new String[]{};
+    public String[] t2Active = new String[]{};
 
     public Tossup(int id, String question, String answer) {
         this.id = id;
@@ -66,8 +68,21 @@ public class Tossup {
         return temp;
     }
 
+    public static Tossup current() {
+        if (setidx < 0 || setidx >= questionSet.length) return null;
+        return questionSet[setidx];
+    }
+
     @Override
     public String toString() {
         return String.valueOf(this.id);
+    }
+
+    public void updateActive(int team) {
+        if (team == 0) {
+            t1Active = Team.teams[0].activePlayers.toArray(new String[0]);
+        } else {
+            t2Active = Team.teams[1].activePlayers.toArray(new String[0]);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.uni;
 
 import com.uni.marker.BuzzData;
+import com.uni.question.Tossup;
 
 import javax.swing.*;
 import java.awt.*;
@@ -23,7 +24,7 @@ public class Team {
     public String name;
     int[] teamStats = new int[]{0, 0, 0, 0};
     //0 or 1 value
-    private int teamId;
+    public int teamId;
 
     Team(String name, int teamId) {
         this.name = name;
@@ -64,6 +65,7 @@ public class Team {
         nameField.setText("");
         playerList.add(playerName);
         activePlayers.add(playerName);
+        if (Tossup.current() != null) Tossup.current().updateActive(teamId);
         playerData.put(playerName, new int[]{0, 0, 0, 0});
 
         JPanel playerContainer = new JPanel();
@@ -83,7 +85,9 @@ public class Team {
                 super.mousePressed(e);
                 playerList.remove(playerName);
                 playerData.remove(playerName);
+                activePlayers.remove(playerName);
                 canvas.remove(playerContainer);
+                if (Tossup.current() != null) Tossup.current().updateActive(teamId);
                 Main.window.playermanager.updateGraphics();
             }
         });
@@ -97,6 +101,7 @@ public class Team {
                 activePlayers.remove(playerName);
                 togglePlayer.setText("Inactive");
             }
+            if (Tossup.current() != null) Tossup.current().updateActive(teamId);
             Main.window.playermanager.updateGraphics();
         });
     }
