@@ -21,8 +21,6 @@ public class PlayerManager extends JDialog {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Team.teams[0] = new Team("team 0", 0);
-        Team.teams[1] = new Team("team 1", 1);
 
         setIconImage(Main.launcherIcon);
         setTitle("Manage Players");

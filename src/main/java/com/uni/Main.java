@@ -30,6 +30,8 @@ public class Main {
         launcherIcon = ImageIO.read(Main.class.getResourceAsStream("/fifteen.png"));
         Category.loadCategories("/categories");
         window = new Window(1000, "i read qb questions");
+        Team.teams[0] = new Team("team 0", 0);
+        Team.teams[1] = new Team("team 1", 1);
 //        processFile(new File("./dogs.pdf"));
         processFile(new File("./packet1.pdf"));
         window.setTossup(0);
