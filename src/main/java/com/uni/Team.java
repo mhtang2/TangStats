@@ -1,7 +1,9 @@
 package com.uni;
 
 import com.uni.marker.BuzzData;
+import com.uni.question.Bonus;
 import com.uni.question.Tossup;
+import org.apache.xmlbeans.impl.xb.xsdschema.impl.FormChoiceImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,14 +17,13 @@ public class Team {
     public static Team[] teams = new Team[2];
 
     public ArrayList<String> playerList = new ArrayList<>();
-    public ArrayList<String> activePlayers = new ArrayList<>();
     public Map<String, int[]> playerData = new HashMap<>();
 
     //Stuff for adding things in player manager
     JPanel canvas = new JPanel();
     JTextField nameField = new JTextField(20);
     public String name;
-    int[] teamStats = new int[]{0, 0, 0, 0};
+    public int[] teamStats = new int[]{0, 0, 0, 0};
     //0 or 1 value
     public int teamId;
 
@@ -56,22 +57,21 @@ public class Team {
         });
     }
 
-    void addPlayer() {
-        String playerName = nameField.getText();
-        if (playerName.length() < 1 || playerList.contains(playerName)) {
-            JOptionPane.showMessageDialog(null, "Invalid or duplicate player name", "bad player", JOptionPane.INFORMATION_MESSAGE);
-            return;
+    public void reconstructCanvas() {
+        while (canvas.getComponentCount() > 2) {
+            canvas.remove(2);
         }
-        nameField.setText("");
-        playerList.add(playerName);
-        activePlayers.add(playerName);
-        if (Tossup.current() != null) Tossup.current().updateActive(teamId);
-        playerData.put(playerName, new int[]{0, 0, 0, 0});
+        ArrayList<String> activelist = Tossup.current().getActive(teamId);
+        for (String player : playerList) {
+            addPlayerContainer(player, activelist.contains(player));
+        }
+    }
 
+    private void addPlayerContainer(String playerName, boolean active) {
         JPanel playerContainer = new JPanel();
         JLabel removeButton = new JLabel();
         removeButton.setIcon(PlayerManager.xIcon);
-        JToggleButton togglePlayer = new JToggleButton("Active", false);
+        JToggleButton togglePlayer = new JToggleButton(active ? "Active" : "Inactive", !active);
 
         playerContainer.add(new JLabel(playerName));
         playerContainer.add(togglePlayer);
@@ -85,25 +85,34 @@ public class Team {
                 super.mousePressed(e);
                 playerList.remove(playerName);
                 playerData.remove(playerName);
-                activePlayers.remove(playerName);
+                Tossup.current().getActive(teamId).remove(playerName);
                 canvas.remove(playerContainer);
-                if (Tossup.current() != null) Tossup.current().updateActive(teamId);
                 Main.window.playermanager.updateGraphics();
             }
         });
         togglePlayer.addItemListener((itemEvent) -> {
             if (itemEvent.getStateChange() == ItemEvent.DESELECTED) {
-                if (!activePlayers.contains(playerName)) {
-                    activePlayers.add(playerName);
-                }
+                Tossup.current().getActive(teamId).add(playerName);
                 togglePlayer.setText("Active");
             } else {
-                activePlayers.remove(playerName);
+                Tossup.current().getActive(teamId).remove(playerName);
                 togglePlayer.setText("Inactive");
             }
-            if (Tossup.current() != null) Tossup.current().updateActive(teamId);
             Main.window.playermanager.updateGraphics();
         });
+    }
+
+    void addPlayer() {
+        String playerName = nameField.getText();
+        if (playerName.length() < 1 || playerList.contains(playerName)) {
+            JOptionPane.showMessageDialog(null, "Invalid or duplicate player name", "bad player", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        nameField.setText("");
+        playerList.add(playerName);
+        Tossup.current().getActive(teamId).add(playerName);
+        playerData.put(playerName, new int[]{0, 0, 0, 0, 0});
+        addPlayerContainer(playerName, true);
     }
 
     void calculateStats() {
@@ -113,10 +122,15 @@ public class Team {
             for (int i = 0; i < 3; i++) {
                 teamStats[i] += playerstats[i];
             }
-            //Calculate total
-            teamStats[3] = 0;
-            for (int j = 0; j < 3; j++) {
-                teamStats[3] += teamStats[j] * BuzzData.pointVals[j];
+        }
+        //Calculate total
+        teamStats[3] = 0;
+        for (int j = 0; j < 3; j++) {
+            teamStats[3] += teamStats[j] * BuzzData.pointVals[j];
+        }
+        for (Bonus b : Bonus.questionSet) {
+            for (int score : b.score) {
+                if (score == teamId) teamStats[3] += 10;
             }
         }
     }

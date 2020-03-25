@@ -15,10 +15,10 @@ public class MarkerContainer extends JPanel {
         this.qword = qword;
         this.teamId = teamId;
         setLayout(new GridLayout(0, 1));
-        JLabel teamName=  new JLabel(Team.teams[teamId].name);
+        JLabel teamName = new JLabel(Team.teams[teamId].name);
         teamName.setForeground(Team.teamColors[teamId]);
         add(teamName);
-        for (String name : Team.teams[teamId].activePlayers) {
+        for (String name : qword.parentQuestion.getActive(teamId)) {
             JPanel player = new JPanel();
             player.add(new JLabel(name));
             JButton p10 = new JButton("+10");
@@ -59,17 +59,17 @@ public class MarkerContainer extends JPanel {
             player.add(p5);
             add(player);
         }
-        if (Team.teams[teamId].activePlayers.isEmpty()) {
+        if (qword.parentQuestion.getActive(teamId).isEmpty()) {
             add(new JLabel("Add more players dawg"));
         }
     }
 
     void update() {
-        for (int i = 0; i < Team.teams[teamId].activePlayers.size(); i++) {
-            String name = Team.teams[teamId].activePlayers.get(i);
-            JButton p15 = (JButton) ((JPanel) getComponent(i+1)).getComponent(1);
-            JButton p10 = (JButton) ((JPanel) getComponent(i+1)).getComponent(2);
-            JButton p5 = (JButton) ((JPanel) getComponent(i+1)).getComponent(3);
+        for (int i = 0; i < qword.parentQuestion.getActive(teamId).size(); i++) {
+            String name = qword.parentQuestion.getActive(teamId).get(i);
+            JButton p15 = (JButton) ((JPanel) getComponent(i + 1)).getComponent(1);
+            JButton p10 = (JButton) ((JPanel) getComponent(i + 1)).getComponent(2);
+            JButton p5 = (JButton) ((JPanel) getComponent(i + 1)).getComponent(3);
             p15.setBackground(Color.white);
             p10.setBackground(Color.white);
             p5.setBackground(Color.white);

@@ -1,19 +1,19 @@
 package com.uni;
 
+import com.uni.datamanager.ExportRound;
 import com.uni.marker.BuzzData;
 import com.uni.marker.QuestionWord;
 import com.uni.question.Bonus;
 import com.uni.question.Category;
 import com.uni.question.Tossup;
 
-import javax.sound.midi.Soundbank;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Arrays;
 
 public class Window extends JFrame {
     final static double SCREEN_RES = 1.61;
@@ -21,6 +21,7 @@ public class Window extends JFrame {
     final static Color buttonColor = new Color(0xe3e3e3);
 
     private boolean tossupMode = true;
+    public int roundNumber = 0;
 
     public PlayerManager playermanager = new PlayerManager();
     private JLabel fileStatus = new JLabel("No file selected");
@@ -30,9 +31,12 @@ public class Window extends JFrame {
     private JPanel questionContainer = new JPanel();
     private JFileChooser filechoose = new JFileChooser(new File("./"));
     private JPanel scoreBoard = new JPanel();
-
+    private JPanel scoreBoardContainer = new JPanel();
+    private JLabel scoreLabelT1 = new JLabel("Team 0");
+    private JLabel scoreLabelT2 = new JLabel("Team 1");
     private JComboBox<Category> categorySelect = new JComboBox<>(Category.categories);
     private JComboBox<String> subcategorySelect = new JComboBox<>(new String[]{null});
+    private JComboBox<String> roundSelect;
 
     public Window(int base, String title) {
         //Close operation confirm
@@ -73,13 +77,21 @@ public class Window extends JFrame {
         //Container for controller
         JButton saveButton = new JButton("Save data");
         saveButton.setBackground(buttonColor);
-        saveButton.addActionListener(e -> ExportData.saveData(filechoose));
+        saveButton.addActionListener(e -> ExportRound.saveRoundData(filechoose));
         JPanel controlContainer = new JPanel();
         controlContainer.setBackground(Color.lightGray);
         questionStatus.setFont(defFont);
         questionStatus.setVerticalAlignment(SwingConstants.CENTER);
+        String[] roundstrings = new String[20];
+        Arrays.setAll(roundstrings, String::valueOf);
+        roundSelect = new JComboBox<>(roundstrings);
+        roundSelect.addActionListener(e -> {
+            roundNumber = roundSelect.getSelectedIndex();
+        });
         controlContainer.add(questionStatus);
         controlContainer.add(saveButton);
+        controlContainer.add(new JLabel("Round: "));
+        controlContainer.add(roundSelect);
 
         //Container for category selection
         JPanel categoryContainer = new JPanel();
@@ -87,27 +99,32 @@ public class Window extends JFrame {
         categoryContainer.add(categorySelect);
         categoryContainer.add(new JLabel("Subcategory: "));
         categoryContainer.add(subcategorySelect);
-        categorySelect.addActionListener(e -> {
+        categorySelect.addItemListener(e -> {
             Category selected = ((Category) categorySelect.getSelectedItem());
-            if (tossupMode) {
-                Tossup.current().category = selected;
-            } else {
-                Bonus.questionSet[Bonus.setidx].category = selected;
+            if (e.getStateChange() == ItemEvent.SELECTED || selected == null) {
+                if (tossupMode) {
+                    Tossup.current().category = selected;
+                } else {
+                    Bonus.questionSet[Bonus.setidx].category = selected;
+                }
+                if (selected != null) {
+                    subcategorySelect.setModel(new DefaultComboBoxModel<>(selected.subcategories));
+                } else {
+                    subcategorySelect.setModel(new DefaultComboBoxModel<>(new String[]{null}));
+                }
+                questionContainer.grabFocus();
             }
-            if (selected != null) {
-                subcategorySelect.setModel(new DefaultComboBoxModel<>(selected.subcategories));
-            } else {
-                subcategorySelect.setModel(new DefaultComboBoxModel<>(new String[]{null}));
-            }
-            questionContainer.grabFocus();
         });
-        subcategorySelect.addActionListener(e -> {
-            if (tossupMode) {
-                Tossup.current().subcategory = (String) subcategorySelect.getSelectedItem();
-            } else {
-                Bonus.questionSet[Bonus.setidx].subcategory = (String) subcategorySelect.getSelectedItem();
+        subcategorySelect.addItemListener(e -> {
+            String selected = (String) subcategorySelect.getSelectedItem();
+            if (e.getStateChange() == ItemEvent.SELECTED || selected == null) {
+                if (tossupMode) {
+                    Tossup.current().subcategory = selected;
+                } else {
+                    Bonus.questionSet[Bonus.setidx].subcategory = selected;
+                }
+                questionContainer.grabFocus();
             }
-            questionContainer.grabFocus();
         });
 
         //Container for toggling bonus
@@ -133,7 +150,6 @@ public class Window extends JFrame {
             } else {
                 setTossup(Tossup.setidx);
             }
-            tossupMode = !tossupMode;
         });
 
 
@@ -170,15 +186,35 @@ public class Window extends JFrame {
         gbc.gridx = 1;
         topContainer.add(toggleContainer, gbc);
 
-        //Scoreboard
-        scoreBoard.setLayout(new GridLayout(0, 5));
+        //Scoreboard && scoreboard container
+        scoreBoard.setLayout(new GridLayout(0, 4));
         scoreBoard.add(new JLabel("Player"));
         scoreBoard.add(new JLabel("+15"));
         scoreBoard.add(new JLabel("+10"));
         scoreBoard.add(new JLabel("-5"));
+        scoreBoardContainer.setLayout(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridheight = 2;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        scoreBoardContainer.add(scoreBoard, gbc);
+        gbc.gridx = 1;
+        gbc.gridheight = 1;
+        gbc.anchor = GridBagConstraints.CENTER;
+        scoreLabelT1.setForeground(Team.teamColors[0]);
+        scoreLabelT2.setForeground(Team.teamColors[1]);
+        scoreLabelT1.setFont(new Font("Open Sans", Font.BOLD, 30));
+        scoreLabelT2.setFont(new Font("Open Sans", Font.BOLD, 30));
+        scoreBoardContainer.add(scoreLabelT1, gbc);
+        gbc.gridy = 1;
+        scoreBoardContainer.add(scoreLabelT2, gbc);
+
         add(topContainer, BorderLayout.PAGE_START);
         add(questionContainer);
-        add(scoreBoard, BorderLayout.PAGE_END);
+        add(scoreBoardContainer, BorderLayout.PAGE_END);
         questionContainer.grabFocus();
         revalidate();
 
@@ -189,7 +225,7 @@ public class Window extends JFrame {
         int r = filechoose.showOpenDialog(null);
         if (r == JFileChooser.APPROVE_OPTION) {
             try {
-                Main.processFile(filechoose.getSelectedFile());
+                PacketProcess.processFile(filechoose.getSelectedFile());
                 fileStatus.setText("Read " + Tossup.questionSet.length + " questions from " + filechoose.getSelectedFile().getName());
                 //Reset player counts
                 Team.resetScores();
@@ -206,8 +242,10 @@ public class Window extends JFrame {
         if (idx < 0 || idx >= Bonus.questionSet.length) {
             return;
         }
+        tossupMode = false;
         Bonus.setidx = idx;
         Bonus bonus = Bonus.questionSet[idx];
+        bonus.controllingTeam = Tossup.current().controllingTeam;
         categorySelect.setSelectedItem(bonus.category);
         subcategorySelect.setSelectedItem(bonus.subcategory);
         questionContainer.removeAll();
@@ -218,35 +256,49 @@ public class Window extends JFrame {
         gbc.weightx = 1.0;
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.gridwidth = 2;
         questionContainer.add(leadIn, gbc);
         for (int c = 0; c < 3; c++) {
             int i = c;
+            gbc.gridwidth = 1;
             gbc.gridy = i + 1;
             gbc.gridx = 0;
+            gbc.anchor = GridBagConstraints.WEST;
             JTextArea q = new JTextArea(bonus.q[i] + bonus.a[i]);
             q.setFont(defFont);
             q.setEditable(false);
 
             JComboBox<String> choose = new JComboBox<>(new String[]{"Dead", Team.teams[0].name, Team.teams[1].name});
+            choose.setSelectedIndex(bonus.score[i] + 1);
             choose.addActionListener(e -> {
                 @SuppressWarnings("unchecked")
                 int s = ((JComboBox<String>) e.getSource()).getSelectedIndex() - 1;
                 Bonus.questionSet[Bonus.setidx].score[i] = s;
+                if (s > -1) {
+                    updateScore(Team.teams[s]);
+                }
             });
             questionContainer.add(q, gbc);
             gbc.gridx = 1;
             questionContainer.add(choose, gbc);
         }
         repaint();
+        validate();
     }
 
-    public boolean setTossup(int idx) {
+    public void setTossup(int idx) {
         if (idx < 0 || idx >= Tossup.questionSet.length) {
-            return false;
+            return;
         }
-
+        tossupMode = true;
         Tossup.setidx = idx;
         Tossup q = Tossup.questionSet[idx];
+        for (int i = 0; i < 2; i++) {
+            if (q.getActive(i).isEmpty() && idx > 0) {
+                q.getActive(i).addAll(Tossup.questionSet[idx - 1].getActive(i));
+            }
+        }
+        playermanager.reconstructCanvas();
         //Set selected values for tossup
         categorySelect.setSelectedItem(q.category);
         subcategorySelect.setSelectedItem(q.subcategory);
@@ -266,8 +318,9 @@ public class Window extends JFrame {
         questionContainer.add(b);
         questionContainer.validate();
         questionStatus.setText("Tossup " + q.id + " of " + Tossup.questionSet.length);
+        updateScoreboard();
         repaint();
-        return true;
+        return;
     }
 
     private void handleKey(int keyCode) {
@@ -278,34 +331,38 @@ public class Window extends JFrame {
         }
     }
 
+    public void updateScore(Team team) {
+        team.calculateStats();
+        JLabel teamLabel = team.teamId == 0 ? scoreLabelT1 : scoreLabelT2;
+        teamLabel.setText(team.name + " - " + team.teamStats[3]);
+    }
+
     public void updateScoreboard() {
         scoreBoard.removeAll();
         scoreBoard.add(new JLabel("Player"));
         scoreBoard.add(new JLabel("+15"));
         scoreBoard.add(new JLabel("+10"));
         scoreBoard.add(new JLabel("-5"));
-        scoreBoard.add(new JLabel("Point total"));
         for (Team team : Team.teams) {
             //Team stats
-            team.calculateStats();
+            updateScore(team);
             scoreBoard.add(new JLabel(team.name));
             for (int j = 0; j < 3; j++) {
                 scoreBoard.add(new JLabel(String.valueOf(team.teamStats[j])));
             }
-            scoreBoard.add(new JLabel(String.valueOf(team.teamStats[3])));
+            JLabel points = new JLabel(String.valueOf(team.teamStats[3]));
+            points.setForeground(Team.teamColors[team.teamId]);
             //Individual stats
             //Get active player
             Tossup currentQ = Tossup.current();
             if (currentQ == null) continue;
-            String[] activePlayers = team.teamId == 0 ? currentQ.t1Active : currentQ.t2Active;
-            for (String name : activePlayers) {
+            for (String name : currentQ.getActive(team.teamId)) {
                 team.playerData.get(name)[3] = 0;
                 scoreBoard.add(new JLabel(name));
                 for (int j = 0; j < 3; j++) {
                     team.playerData.get(name)[3] += team.playerData.get(name)[j] * BuzzData.pointVals[j];
                     scoreBoard.add(new JLabel(String.valueOf(team.playerData.get(name)[j])));
                 }
-                scoreBoard.add(new JLabel(String.valueOf(team.playerData.get(name)[3])));
             }
         }
         validate();

@@ -9,6 +9,8 @@ public class Bonus {
     public int[] score = new int[]{-1, -1, -1};
     public Category category = null;
     public String subcategory = null;
+    public int controllingTeam = -1;
+    public int id = 0;
 
     @Override
     public String toString() {

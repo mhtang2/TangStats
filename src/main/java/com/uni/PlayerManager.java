@@ -49,4 +49,9 @@ public class PlayerManager extends JDialog {
         Main.window.updateScoreboard();
     }
 
+    public void reconstructCanvas() {
+        Team.teams[0].reconstructCanvas();
+        Team.teams[1].reconstructCanvas();
+        pack();
+    }
 }

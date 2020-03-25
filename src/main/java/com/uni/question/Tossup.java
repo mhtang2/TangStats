@@ -1,11 +1,15 @@
 
 package com.uni.question;
 
+import com.sun.istack.internal.NotNull;
 import com.uni.Main;
 import com.uni.Team;
 import com.uni.marker.QuestionWord;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 public class Tossup {
     public static Tossup[] questionSet;
@@ -15,18 +19,24 @@ public class Tossup {
     /**
      * ID assigned by set, not index
      **/
-    public int id;
+    public int id = 0;
     public String answer;
     public QuestionWord[] words;
     private int powerMark = 0;
-    private int size = 0;
+    public int size = 0;
 
     public Category category = null;
     public String subcategory = null;
     public int controllingTeam = -1;
     public boolean dead = true;
-    public String[] t1Active = new String[]{};
-    public String[] t2Active = new String[]{};
+    ArrayList<String> t1Active = new ArrayList<>();
+    ArrayList<String> t2Active = new ArrayList<>();
+
+    @NotNull
+    public ArrayList<String> getActive(int tid) {
+        if (tid == 0) return t1Active;
+        return t2Active;
+    }
 
     public Tossup(int id, String question, String answer) {
         this.id = id;
@@ -69,7 +79,10 @@ public class Tossup {
     }
 
     public static Tossup current() {
-        if (setidx < 0 || setidx >= questionSet.length) return null;
+        if (setidx < 0 || setidx >= questionSet.length) {
+            System.out.println("NULL QUESTION RETURNED");
+            return new Tossup(-1, "", "");
+        }
         return questionSet[setidx];
     }
 
@@ -78,11 +91,5 @@ public class Tossup {
         return String.valueOf(this.id);
     }
 
-    public void updateActive(int team) {
-        if (team == 0) {
-            t1Active = Team.teams[0].activePlayers.toArray(new String[0]);
-        } else {
-            t2Active = Team.teams[1].activePlayers.toArray(new String[0]);
-        }
-    }
+
 }

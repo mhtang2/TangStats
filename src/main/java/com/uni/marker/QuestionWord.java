@@ -15,7 +15,7 @@ import java.awt.event.MouseEvent;
 
 public class QuestionWord extends JLabel {
     public static Font font = new Font(Font.SERIF, Font.PLAIN, 20);
-    private Tossup parentQuestion;
+    public Tossup parentQuestion;
     private Color defaultBG = Color.white;
     private final Color hoverBG = Color.lightGray;
 
@@ -70,7 +70,7 @@ public class QuestionWord extends JLabel {
     public QuestionWord(int wordID, String word, Tossup parentQuestion) {
         this.wordID = wordID;
         this.parentQuestion = parentQuestion;
-        setText(word);
+        setText(word.trim());
         setFont(font);
         setOpaque(true);
         setBackground(defaultBG);
