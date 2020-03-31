@@ -253,7 +253,7 @@ public class Window extends JFrame {
                 updateScoreboard();
                 playermanager = new PlayerManager();
                 setTossup(0);
-            } catch (IOException | SetFormatException e1) {
+            } catch (IOException e1) {
                 fileStatus.setText("Error reading");
                 e1.printStackTrace();
             }

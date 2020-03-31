@@ -8,6 +8,7 @@ import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -24,28 +25,25 @@ public class CompileStats {
     private static int off_bonus = ExportRound.off_bonus;
     private static int headerRow = ExportRound.headerRow;
     private static int roundSheetHeader = ExportRound.roundSheetHeader;
-    Workbook tossupBook = new XSSFWorkbook();
+    XSSFWorkbook tossupBook = new XSSFWorkbook();
     Sheet tossupSheet;
     int tossupSheetRowN = 0;
+    int correctlyGenerated = 0;
+    int expectedGenerated = 0;
 
-    public void compile(File[] files, String savePath) {
+    public void compile(File[] files) {
         tossupSheetSetup();
         buildData(files);
         rankTeams();
         conversionData();
         //write out tossup sheet
-        try {
-            File out = new File("./exportdata/every_buzz.xlsx");
-            out.getParentFile().mkdirs();
-            tossupBook.write(new FileOutputStream(out));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        writeExport("./exportdata/every_buzz.xlsx", tossupBook);
+        JOptionPane.showMessageDialog(null, "Generated " + correctlyGenerated + "/" + expectedGenerated + " files");
     }
 
     private void conversionData() {
         //Tossups
-        Workbook wb = new XSSFWorkbook();
+        XSSFWorkbook wb = new XSSFWorkbook();
         Sheet sheet = wb.createSheet("Tossups");
         CellStyle style = wb.createCellStyle();
         Font font = wb.createFont();
@@ -99,9 +97,9 @@ public class CompileStats {
         Collections.sort(rounds);
         for (int round : rounds) {
             ArrayList<BonusStat> bonuses = bonusMap.get(round);
-            for (BonusStat ts : bonuses) {
+            /*for (BonusStat ts : bonuses) {
                 System.out.println(Arrays.toString(ts.stats));
-            }
+            }*/
             for (int q = 0; q < bonuses.size(); q++) {
                 int[] dat = bonuses.get(q).stats;
                 row = sheet.createRow(rowNum++);
@@ -116,14 +114,7 @@ public class CompileStats {
         for (int i = 0; i <= 8; i++) {
             sheet.autoSizeColumn(i);
         }
-
-        try {
-            File out = new File("./exportdata/conversion.xlsx");
-            out.getParentFile().mkdirs();
-            wb.write(new FileOutputStream(out));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        writeExport("./exportdata/conversion.xlsx", wb);
     }
 
     private void tossupSheetSetup() {
@@ -217,14 +208,7 @@ public class CompileStats {
         for (int i = 0; i < catsAndTotal.size() * headers.length; i++) {
             sheet.autoSizeColumn(i);
         }
-
-        try {
-            File out = new File("./exportdata/ranking.xlsx");
-            out.getParentFile().mkdirs();
-            wb.write(new FileOutputStream(out));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        writeExport("./exportdata/ranking.xlsx", wb);
     }
 
     private void buildData(File[] files) {
@@ -337,7 +321,6 @@ public class CompileStats {
                         for (int i = 0; i <= 6; i++) {
                             tossupSheetRow.createCell(i + 2).setCellValue(row.getCell(off2 + i) == null ? null : row.getCell(off2 + i).toString());
                         }
-                        System.out.println(row.getCell(off2 + 6));
                         //Handle tossups
                         PlayerStat player = team.players.get(pure(row.getCell(off2 + 1).getStringCellValue()));
                         if (player == null) continue;
@@ -397,8 +380,9 @@ public class CompileStats {
                         n++;
                     }
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
+                JOptionPane.showMessageDialog(null, file.getName() + " CORRUPTED", "Warning", JOptionPane.ERROR_MESSAGE);
             }
 
         }
@@ -413,10 +397,10 @@ public class CompileStats {
                 }
             }
         }
-        teams.values().forEach(CompileStats::printTeam);
+//        teams.values().forEach(CompileStats::printTeam);
     }
 
-    static void printTeam(TeamStat team) {
+    private static void printTeam(TeamStat team) {
         System.out.println(team.formattedName);
         team.bonusData.forEach((k, v) -> {
             if (v[0] != 0)
@@ -433,7 +417,22 @@ public class CompileStats {
         }
     }
 
-    static String pure(String name) {
+    private void writeExport(String path, XSSFWorkbook book) {
+        expectedGenerated++;
+        try {
+            File out = new File(path);
+            if (!out.getParentFile().exists() && !out.getParentFile().mkdirs()) {
+                throw new Exception();
+            }
+            book.write(new FileOutputStream(out));
+            correctlyGenerated++;
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Can't save to " + path + "\nFile open or invalid?", "Warning", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private static String pure(String name) {
         return name.replaceAll("[^A-Za-z0-9]", "").toLowerCase(Locale.US);
     }
 

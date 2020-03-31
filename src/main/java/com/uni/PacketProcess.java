@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public class PacketProcess {
     //Process pdf file and questionSet list of questions
-    public static void processFile(File file) throws IOException, SetFormatException {
+    public static void processFile(File file) throws IOException {
         PDDocument doc = PDDocument.load(file);
         PDFTextStripper textStripper = new PDFTextStripper();
         String text = textStripper.getText(doc);

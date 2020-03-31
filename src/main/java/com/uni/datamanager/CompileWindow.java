@@ -29,15 +29,11 @@ public class CompileWindow extends JDialog {
     }
 
     private void saveFile() {
-        jfc.setFileFilter(new FileNameExtensionFilter(".xlsx", "xlsx"));
-        jfc.setCurrentDirectory(new File("./"));
-        jfc.setSelectedFile(new File("FinalSummary.xlsx"));
-        int r = jfc.showSaveDialog(null);
-        if (r == JFileChooser.APPROVE_OPTION) {
-            String path = jfc.getSelectedFile() + "";
-            if (!path.endsWith(".xlsx")) path += ".xlsx";
-            new CompileStats().compile(files, path);
+        if (files == null || files.length < 1) {
+            JOptionPane.showMessageDialog(null, "Pick some round files first!", "Warning", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        new CompileStats().compile(files);
     }
 
     private void selectFiles() {
