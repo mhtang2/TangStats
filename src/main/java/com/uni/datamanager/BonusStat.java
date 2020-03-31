@@ -2,16 +2,16 @@ package com.uni.datamanager;
 
 import org.apache.poi.ss.usermodel.Cell;
 
-public class TossupStat {
+public class BonusStat {
     String cat;
     String subcat;
 
     /**
-     * int[powers,tossups,negs,heard,dead]
+     * int[30,20,10,0,heard]
      **/
     int[] stats = new int[5];
 
-    TossupStat(Cell catcell, Cell subcatcell) {
+    BonusStat(Cell catcell, Cell subcatcell) {
         this.cat = catcell == null ? null : catcell.getStringCellValue();
         this.subcat = subcatcell == null ? null : subcatcell.getStringCellValue();
     }

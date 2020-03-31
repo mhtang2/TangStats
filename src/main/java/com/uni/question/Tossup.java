@@ -1,15 +1,10 @@
 
 package com.uni.question;
 
-import com.sun.istack.internal.NotNull;
 import com.uni.Main;
-import com.uni.Team;
 import com.uni.marker.QuestionWord;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 
 public class Tossup {
     public static Tossup[] questionSet;
@@ -32,7 +27,7 @@ public class Tossup {
     ArrayList<String> t1Active = new ArrayList<>();
     ArrayList<String> t2Active = new ArrayList<>();
 
-    @NotNull
+
     public ArrayList<String> getActive(int tid) {
         if (tid == 0) return t1Active;
         return t2Active;

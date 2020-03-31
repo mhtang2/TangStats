@@ -23,7 +23,7 @@ public class Main {
         launcherIcon = ImageIO.read(Main.class.getResourceAsStream("/fifteen.png"));
         Category.loadCategories("/categories");
         Team.resetTeams();
-        new CompileStats().compile(new File[]{new File("./round2.xlsx"),new File("./round3.xlsx")}, "");
+        new CompileStats().compile(new File[]{new File("./round2.xlsx"),new File("./round3.xlsx"),new File("./round22.xlsx")}, "");
         window = new Window(1000, "i read qb questions");
 //        processFile(new File("./dogs.pdf"));
         PacketProcess.processFile(new File("./packet1.pdf"));

@@ -58,7 +58,7 @@ public class PacketProcess {
                 tossupSet[i] = new Tossup(qId.get(i), rawQuestion.substring(0, answerMatcher.start()), rawQuestion.substring(answerMatcher.start()).split("<", 2)[0]);
             } else {
                 tossupSet[i] = new Tossup(qId.get(i), rawQuestion, "NO ANSWER PROVIDED");
-                System.out.println("Answer formatted incorrectly for q" + qId.get(i));
+                JOptionPane.showMessageDialog(null, "Answer formatted incorrectly for q" + qId.get(i));
             }
         }
         //Process bonuses

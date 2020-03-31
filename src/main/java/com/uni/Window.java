@@ -350,7 +350,7 @@ public class Window extends JFrame {
     public void updateScore(Team team) {
         team.calculateStats();
         JLabel teamLabel = team.teamId == 0 ? scoreLabelT1 : scoreLabelT2;
-        teamLabel.setText(team.name + " - " + team.teamStats[3]);
+        teamLabel.setText(team.teamStats[3] + " - " + team.name);
     }
 
     public void updateScoreboard() {

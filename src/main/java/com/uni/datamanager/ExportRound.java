@@ -7,7 +7,6 @@ import com.uni.marker.QuestionWord;
 import com.uni.question.Bonus;
 import com.uni.question.Category;
 import com.uni.question.Tossup;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
@@ -20,6 +19,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ExportRound {
@@ -28,12 +28,32 @@ public class ExportRound {
     static int off3 = 15;
     static int off4 = 20;
     static int headerRow = 2;
+    static int roundSheetHeader = 9;
 
     //Save data
     public static void saveRoundData(JFileChooser filechoose) {
         if (Main.window.roundNumber < 1) {
             JOptionPane.showMessageDialog(null, "Select a valid round number");
             return;
+        }
+        ArrayList<Integer> missingTossups = new ArrayList<>();
+        ArrayList<Integer> missingBonuses = new ArrayList<>();
+        for (int i = 0; i < Tossup.questionSet.length; i++) {
+            if (Tossup.questionSet[i].category == null) {
+                missingTossups.add(i + 1);
+            }
+        }
+        for (int i = 0; i < Bonus.questionSet.length; i++) {
+            if (Bonus.questionSet[i].category == null) {
+                missingBonuses.add(i + 1);
+            }
+        }
+        if (!(missingBonuses.isEmpty() && missingTossups.isEmpty())) {
+            int res = JOptionPane.showConfirmDialog(null, "Missing categories for\nTossups: " + missingTossups + "\nMissing bonuses: " + missingBonuses + "\nContinue?", "Warning", JOptionPane.YES_NO_OPTION);
+            if (res !=JOptionPane.OK_OPTION){
+                System.out.println(res);
+                return;
+            }
         }
         filechoose.setFileFilter(new FileNameExtensionFilter(".xlsx", "Excel"));
         filechoose.setCurrentDirectory(new File("/home/me/Documents"));
@@ -103,10 +123,9 @@ public class ExportRound {
                 row.createCell(2).setCellValue(bonusT2[0] == 0 ? 0 : bonusT2[1] / (double) bonusT2[0]);
                 //Misc Cat data
 
-                roundrow++;
+                roundrow = roundSheetHeader;
                 row = getRow(roundSheet, roundrow++);
                 row.createCell(0).setCellValue("Misc. data for processing");
-                int headerRow = roundrow;
                 row = getRow(roundSheet, roundrow++);
                 row.createCell(0).setCellValue("Tossups");
                 for (Tossup q : Tossup.questionSet) {
@@ -118,13 +137,13 @@ public class ExportRound {
                         }
                     }
                     String out = dat[0] + "/" + dat[1] + "/" + dat[2];
-                    if (q.controllingTeam == -1) out = "UNHEARD";
+                    if (q.getActive(0).isEmpty() && q.getActive(1).isEmpty()) out = "UNHEARD";
                     row.createCell(0).setCellValue(q.category == null ? null : q.category.toString());
                     row.createCell(1).setCellValue(q.subcategory);
                     row.createCell(2).setCellValue(out);
                 }
 
-                roundrow = headerRow;
+                roundrow = roundSheetHeader + 1;
                 row = getRow(roundSheet, roundrow++);
                 row.createCell(off_bonus).setCellValue("Bonuses");
                 for (Bonus q : Bonus.questionSet) {

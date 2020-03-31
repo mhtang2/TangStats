@@ -1,12 +1,9 @@
 package com.uni.datamanager;
 
-import com.sun.media.sound.SoftTuning;
-import com.sun.net.httpserver.Headers;
-import com.uni.Team;
-import com.uni.marker.BuzzData;
+import com.uni.question.Bonus;
 import com.uni.question.Category;
+import com.uni.question.Tossup;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -19,18 +16,120 @@ import java.util.*;
 
 public class CompileStats {
     private Map<String, TeamStat> teams = new HashMap<>();
+    private Map<Integer, ArrayList<TossupStat>> tossupMap = new HashMap<>();
+    private Map<Integer, ArrayList<BonusStat>> bonusMap = new HashMap<>();
     private static int off2 = ExportRound.off2;
     private static int off3 = ExportRound.off3;
     private static int off4 = ExportRound.off4;
+    private static int off_bonus = ExportRound.off_bonus;
     private static int headerRow = ExportRound.headerRow;
+    private static int roundSheetHeader = ExportRound.roundSheetHeader;
     Workbook tossupBook = new XSSFWorkbook();
     Sheet tossupSheet;
     int tossupSheetRowN = 0;
 
     public void compile(File[] files, String savePath) {
+        tossupSheetSetup();
+        buildData(files);
+        rankTeams();
+        conversionData();
+        //write out tossup sheet
+        try {
+            File out = new File("./exportdata/every_buzz.xlsx");
+            out.getParentFile().mkdirs();
+            tossupBook.write(new FileOutputStream(out));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void conversionData() {
+        //Tossups
+        Workbook wb = new XSSFWorkbook();
+        Sheet sheet = wb.createSheet("Tossups");
+        CellStyle style = wb.createCellStyle();
+        Font font = wb.createFont();
+        font.setBold(true);
+        font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
+        font.setFontHeightInPoints((short) 12);
+        style.setFont(font);
+
+        int rowNum = 0;
+        Row row = sheet.createRow(rowNum++);
+        String headers[] = {"Round#", "Tossup#", "Rooms Heard", "15's", "10's", " -5's", "Dead", "Category", "Subcategory"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = row.createCell(i);
+            cell.setCellStyle(style);
+            cell.setCellValue(headers[i]);
+        }
+        ArrayList<Integer> rounds = new ArrayList<>(tossupMap.keySet());
+        Collections.sort(rounds);
+        for (int round : rounds) {
+            ArrayList<TossupStat> tossups = tossupMap.get(round);
+            /*for (TossupStat ts : tossups) {
+                System.out.println(Arrays.toString(ts.stats));
+            }*/
+            for (int q = 0; q < tossups.size(); q++) {
+                int[] dat = tossups.get(q).stats;
+                row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(round);
+                row.createCell(1).setCellValue(q + 1);
+                row.createCell(2).setCellValue(dat[3]);
+                for (int i = 0; i < 3; i++) row.createCell(3 + i).setCellValue(dat[i]);
+                row.createCell(6).setCellValue(dat[4]);
+                row.createCell(7).setCellValue(tossups.get(q).cat);
+                row.createCell(8).setCellValue(tossups.get(q).subcat);
+            }
+        }
+        for (int i = 0; i <= 8; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        sheet = wb.createSheet("Bonuses");
+        //Bonuses
+        rowNum = 0;
+        row = sheet.createRow(rowNum++);
+        headers = new String[]{"Round#", "Bonus#", "Teams Heard", "30's", "20's", "10's", "0's", "Category", "Subcategory"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = row.createCell(i);
+            cell.setCellStyle(style);
+            cell.setCellValue(headers[i]);
+        }
+        rounds = new ArrayList<>(bonusMap.keySet());
+        Collections.sort(rounds);
+        for (int round : rounds) {
+            ArrayList<BonusStat> bonuses = bonusMap.get(round);
+            for (BonusStat ts : bonuses) {
+                System.out.println(Arrays.toString(ts.stats));
+            }
+            for (int q = 0; q < bonuses.size(); q++) {
+                int[] dat = bonuses.get(q).stats;
+                row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(round);
+                row.createCell(1).setCellValue(q + 1);
+                row.createCell(2).setCellValue(dat[4]);
+                for (int i = 0; i < 4; i++) row.createCell(3 + i).setCellValue(dat[i]);
+                row.createCell(7).setCellValue(bonuses.get(q).cat);
+                row.createCell(8).setCellValue(bonuses.get(q).subcat);
+            }
+        }
+        for (int i = 0; i <= 8; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        try {
+            File out = new File("./exportdata/conversion.xlsx");
+            out.getParentFile().mkdirs();
+            wb.write(new FileOutputStream(out));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void tossupSheetSetup() {
         //Setup sheet
         tossupSheet = tossupBook.createSheet();
-        Row tossupSheetRow = tossupSheet.createRow(tossupSheetRowN);
+        Row tossupSheetRow = tossupSheet.createRow(tossupSheetRowN++);
         CellStyle style = tossupBook.createCellStyle();
         Font font = tossupBook.createFont();
         font.setBold(true);
@@ -42,15 +141,6 @@ public class CompileStats {
             Cell cell = tossupSheetRow.createCell(i);
             cell.setCellStyle(style);
             cell.setCellValue(headers[i]);
-        }
-        buildData(files);
-        rankTeams();
-        try {
-            File out = new File("./exportdata/every_buzz.xlsx");
-            out.getParentFile().mkdirs();
-            tossupBook.write(new FileOutputStream(out));
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -142,8 +232,75 @@ public class CompileStats {
             try {
                 FileInputStream excelFile = new FileInputStream(file);
                 Workbook wb = new XSSFWorkbook(excelFile);
-                int round = (int) wb.getSheetAt(0).getRow(0).getCell(1).getNumericCellValue();
+                //Process round sheet
+                Sheet roundSheet = wb.getSheetAt(0);
+                int round = (int) roundSheet.getRow(0).getCell(1).getNumericCellValue();
                 System.out.println(round + " " + file.getName());
+                ArrayList<TossupStat> tossupStats = tossupMap.get(round);
+                ArrayList<BonusStat> bonusStats = bonusMap.get(round);
+                if (tossupStats == null) {
+                    tossupStats = new ArrayList<TossupStat>();
+                    tossupMap.put(round, tossupStats);
+                }
+                if (bonusStats == null) {
+                    bonusStats = new ArrayList<BonusStat>();
+                    bonusMap.put(round, bonusStats);
+                }
+                Row row;
+                int questionN = 0;
+                while ((row = roundSheet.getRow(roundSheetHeader + 2 + questionN)) != null && row.getCell(2) != null) {
+                    String val = row.getCell(2).toString();
+                    try {
+                        //Add tossup to list if doesnt exist
+                        TossupStat tossup;
+                        if (questionN < tossupStats.size()) {
+                            tossup = tossupStats.get(questionN);
+                        } else {
+                            tossup = new TossupStat(row.getCell(0), row.getCell(1));
+                            tossupStats.add(tossup);
+                        }
+                        if (!val.equals("UNHEARD")) {
+                            int[] dat = Arrays.stream(val.split("/"))
+                                    .mapToInt(Integer::parseInt)
+                                    .toArray();
+                            //DEAD
+                            if (dat[0] == 0 && dat[1] == 0) {
+                                tossup.stats[4]++;
+                            } else {
+                                for (int i = 0; i < 3; i++) tossup.stats[i] += dat[i];
+                            }
+                            //Heard
+                            tossup.stats[3]++;
+                        }
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                    questionN++;
+                }
+                questionN = 0;
+                while ((row = roundSheet.getRow(roundSheetHeader + 2 + questionN)) != null && row.getCell(off_bonus + 2) != null) {
+                    int val = (int) row.getCell(off_bonus + 2).getNumericCellValue();
+                    try {
+                        //Add bonus to list if doesnt exist
+                        BonusStat bonus;
+                        if (questionN < bonusStats.size()) {
+                            bonus = bonusStats.get(questionN);
+                        } else {
+                            bonus = new BonusStat(row.getCell(off_bonus), row.getCell(off_bonus + 1));
+                            bonusStats.add(bonus);
+                        }
+                        if (val != -1) {
+                            //DEAD
+                            bonus.stats[3 - val]++;
+                            //Heard
+                            bonus.stats[4]++;
+                        }
+                    } catch (NumberFormatException e) {
+                        e.printStackTrace();
+                    }
+                    questionN++;
+                }
+
                 //Loop through team sheets
                 for (int teamId = 0; teamId < 2; teamId++) {
                     Sheet sheet = wb.getSheetAt(teamId + 1);
@@ -156,7 +313,6 @@ public class CompileStats {
                         team = new TeamStat(formatTeam);
                         teams.put(pureTeam, team);
                     }
-                    Row row;
                     //Handle players
                     int n = headerRow + 2;
                     while ((row = sheet.getRow(n)) != null && row.getCell(0) != null) {
@@ -181,6 +337,7 @@ public class CompileStats {
                         for (int i = 0; i <= 6; i++) {
                             tossupSheetRow.createCell(i + 2).setCellValue(row.getCell(off2 + i) == null ? null : row.getCell(off2 + i).toString());
                         }
+                        System.out.println(row.getCell(off2 + 6));
                         //Handle tossups
                         PlayerStat player = team.players.get(pure(row.getCell(off2 + 1).getStringCellValue()));
                         if (player == null) continue;
