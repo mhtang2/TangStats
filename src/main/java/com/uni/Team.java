@@ -57,6 +57,11 @@ public class Team {
         });
     }
 
+    public static void resetTeams() {
+        Team.teams[0] = new Team("team 0", 0);
+        Team.teams[1] = new Team("team 1", 1);
+    }
+
     public void reconstructCanvas() {
         while (canvas.getComponentCount() > 2) {
             canvas.remove(2);
@@ -129,6 +134,7 @@ public class Team {
             teamStats[3] += teamStats[j] * BuzzData.pointVals[j];
         }
         for (Bonus b : Bonus.questionSet) {
+            if (b == null) return;
             for (int score : b.score) {
                 if (score == teamId) teamStats[3] += 10;
             }

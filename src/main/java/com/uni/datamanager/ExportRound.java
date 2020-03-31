@@ -5,7 +5,9 @@ import com.uni.Team;
 import com.uni.marker.BuzzData;
 import com.uni.marker.QuestionWord;
 import com.uni.question.Bonus;
+import com.uni.question.Category;
 import com.uni.question.Tossup;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
@@ -17,12 +19,25 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
 
 public class ExportRound {
+    static int off_bonus = 3;
+    static int off2 = 7;
+    static int off3 = 15;
+    static int off4 = 20;
+    static int headerRow = 2;
+
     //Save data
     public static void saveRoundData(JFileChooser filechoose) {
+        if (Main.window.roundNumber < 1) {
+            JOptionPane.showMessageDialog(null, "Select a valid round number");
+            return;
+        }
         filechoose.setFileFilter(new FileNameExtensionFilter(".xlsx", "Excel"));
         filechoose.setCurrentDirectory(new File("/home/me/Documents"));
+        filechoose.setSelectedFile(new File("round" + Main.window.roundNumber + "_" + Team.teams[0].name + "_" + Team.teams[1].name + ".xlsx"));
         int r = filechoose.showSaveDialog(null);
         if (r == JFileChooser.APPROVE_OPTION) {
             try {
@@ -84,16 +99,54 @@ public class ExportRound {
                 row.createCell(2).setCellValue(bonusT2[1]);
                 row = roundSheet.createRow(roundrow++);
                 row.createCell(0).setCellValue("PPB");
-                row.createCell(1).setCellValue(bonusT1[1] / (double) bonusT1[0]);
-                row.createCell(2).setCellValue(bonusT2[1] / (double) bonusT2[0]);
+                row.createCell(1).setCellValue(bonusT1[0] == 0 ? 0 : bonusT1[1] / (double) bonusT1[0]);
+                row.createCell(2).setCellValue(bonusT2[0] == 0 ? 0 : bonusT2[1] / (double) bonusT2[0]);
+                //Misc Cat data
+
+                roundrow++;
+                row = getRow(roundSheet, roundrow++);
+                row.createCell(0).setCellValue("Misc. data for processing");
+                int headerRow = roundrow;
+                row = getRow(roundSheet, roundrow++);
+                row.createCell(0).setCellValue("Tossups");
+                for (Tossup q : Tossup.questionSet) {
+                    row = getRow(roundSheet, roundrow++);
+                    int[] dat = new int[3];
+                    for (QuestionWord qword : q.words) {
+                        if (qword.buzzData.point > -1) {
+                            dat[qword.buzzData.point]++;
+                        }
+                    }
+                    String out = dat[0] + "/" + dat[1] + "/" + dat[2];
+                    if (q.controllingTeam == -1) out = "UNHEARD";
+                    row.createCell(0).setCellValue(q.category == null ? null : q.category.toString());
+                    row.createCell(1).setCellValue(q.subcategory);
+                    row.createCell(2).setCellValue(out);
+                }
+
+                roundrow = headerRow;
+                row = getRow(roundSheet, roundrow++);
+                row.createCell(off_bonus).setCellValue("Bonuses");
+                for (Bonus q : Bonus.questionSet) {
+                    row = getRow(roundSheet, roundrow++);
+                    row.createCell(off_bonus).setCellValue(q.category == null ? null : q.category.toString());
+                    row.createCell(off_bonus + 1).setCellValue(q.subcategory);
+                    int right = 0;
+                    for (int i : q.score) {
+                        if (i > -1) right++;
+                    }
+                    if (q.controllingTeam == -1) right = -1;
+                    row.createCell(off_bonus + 2).setCellValue(right);
+                }
+
                 writeTeamSheet(teamSheet1, Team.teams[0], style);
                 writeTeamSheet(teamSheet2, Team.teams[1], style);
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 1; i++) {
                     roundSheet.autoSizeColumn(i);
                 }
                 workbook.write(new FileOutputStream(new File(path)));
                 JOptionPane.showMessageDialog(null, "Successfully saved to " + path);
-            } catch (Exception ex) {
+            } catch (IOException ex) {
                 JOptionPane.showMessageDialog(null, "Invalid file or file locked");
                 ex.printStackTrace();
             }
@@ -102,80 +155,148 @@ public class ExportRound {
 
     private static void writeTeamSheet(XSSFSheet sheet, Team team, CellStyle boldstyle) {
         int rownum = 0;
-        Row row = sheet.createRow(rownum++);
+        Row row = getRow(sheet, rownum++);
         row.createCell(0).setCellValue("Team");
         row.createCell(1).setCellValue(team.name);
         rownum++;
         //Player data
-        sheet.createRow(rownum++).createCell(0).setCellValue("Player data");
+        getRow(sheet, rownum++).createCell(0).setCellValue("Player data");
         sheet.getRow(rownum - 1).getCell(0).setCellStyle(boldstyle);
         String[] headers = new String[]{"Player", "Powers", "10's", "Negs", "Total Points", "TUH"};
-        row = sheet.createRow(rownum++);
+        row = getRow(sheet, rownum++);
         for (int i = 0; i < headers.length; i++) {
             row.createCell(i).setCellValue(headers[i]);
             row.getCell(i).setCellStyle(boldstyle);
         }
         getPlayerTUH(team);
         for (String player : team.playerList) {
-            row = sheet.createRow(rownum++);
+            row = getRow(sheet, rownum++);
             row.createCell(0).setCellValue(player);
             for (int i = 0; i < 5; i++) {
                 row.createCell(i + 1).setCellValue(team.playerData.get(player)[i]);
             }
         }
-        rownum++;
-        int questionRow = rownum;
+
         //Tossup data
-        sheet.createRow(rownum++).createCell(0).setCellValue("Tossup data");
-        sheet.getRow(rownum - 1).getCell(0).setCellStyle(boldstyle);
-        headers = new String[]{"Tossup #", "Player", "Points Earned", "Category", "Subcategory", "Cdepth"};
-        row = sheet.createRow(rownum++);
+        rownum = headerRow;
+
+        getRow(sheet, rownum++).createCell(off2).setCellValue("Tossup data");
+        getRow(sheet, rownum - 1).getCell(off2).setCellStyle(boldstyle);
+        headers = new String[]{"Tossup #", "Player", "Points Earned", "Category", "Subcategory", "Answer", "Cdepth"};
+        row = getRow(sheet, rownum++);
         for (int i = 0; i < headers.length; i++) {
-            row.createCell(i).setCellValue(headers[i]);
-            row.getCell(i).setCellStyle(boldstyle);
+            row.createCell(i + off2).setCellValue(headers[i]);
+            row.getCell(i + off2).setCellStyle(boldstyle);
         }
         for (Tossup tossup : Tossup.questionSet) {
             for (QuestionWord qword : tossup.words) {
                 BuzzData data = qword.buzzData;
                 if (data.point != -1 && data.teamId == team.teamId) {
-                    row = sheet.createRow(rownum++);
-                    row.createCell(0).setCellValue(tossup.id);
-                    row.createCell(1).setCellValue(data.name);
-                    row.createCell(2).setCellValue(BuzzData.pointVals[data.point]);
-                    row.createCell(3).setCellValue(tossup.category == null ? "" : tossup.category.toString());
-                    row.createCell(4).setCellValue(tossup.subcategory);
-                    row.createCell(5).setCellValue(qword.wordID + "/" + tossup.size);
+                    row = getRow(sheet, rownum++);
+                    row.createCell(off2).setCellValue(tossup.id);
+                    row.createCell(off2 + 1).setCellValue(data.name);
+                    row.createCell(off2 + 2).setCellValue(BuzzData.pointVals[data.point]);
+                    row.createCell(off2 + 3).setCellValue(tossup.category == null ? "" : tossup.category.toString());
+                    row.createCell(off2 + 4).setCellValue(tossup.subcategory);
+                    row.createCell(off2 + 5).setCellValue(tossup.answer.split("\\[", 2)[0]);
+                    row.createCell(off2 + 6).setCellValue((double) qword.wordID / tossup.size);
                 }
             }
         }
         //Bonus data
-        row = sheet.getRow(questionRow++);
-        row.createCell(7).setCellValue("Bonus data");
-        sheet.getRow(questionRow - 1).getCell(7).setCellStyle(boldstyle);
+        rownum = headerRow;
+        row = getRow(sheet, rownum++);
+        row.createCell(off3).setCellValue("Bonus data");
+        row.getCell(off3).setCellStyle(boldstyle);
         headers = new String[]{"Bonus #", "Points earned", "Category", "Subcategory"};
-        row = sheet.getRow(questionRow++);
+        row = getRow(sheet, rownum++);
         for (int i = 0; i < headers.length; i++) {
-            row.createCell(7 + i).setCellValue(headers[i]);
-            row.getCell(7 + i).setCellStyle(boldstyle);
+            row.createCell(off3 + i).setCellValue(headers[i]);
+            row.getCell(off3 + i).setCellStyle(boldstyle);
         }
         for (Bonus bonus : Bonus.questionSet) {
             if (bonus.controllingTeam == team.teamId) {
-                row = sheet.getRow(questionRow++);
-                row.createCell(7).setCellValue(bonus.id);
+                row = getRow(sheet, rownum++);
+                row.createCell(off3).setCellValue(bonus.id);
                 int points = 0;
                 for (int score : bonus.score) {
                     if (score == team.teamId) points += 10;
                 }
-                row.createCell(8).setCellValue(points);
-                row.createCell(9).setCellValue(bonus.category == null ? "" : bonus.category.toString());
-                row.createCell(10).setCellValue(bonus.subcategory);
+                row.createCell(off3 + 1).setCellValue(points);
+                row.createCell(off3 + 2).setCellValue(bonus.category == null ? "" : bonus.category.toString());
+                row.createCell(off3 + 3).setCellValue(bonus.subcategory);
             }
         }
-        for (int i = 0; i < 10; i++) {
+        //Heard data
+        rownum = headerRow;
+        row = getRow(sheet, rownum++);
+        row.createCell(off4).setCellValue("Heard");
+        row.getCell(off4).setCellStyle(boldstyle);
+        row = getRow(sheet, rownum++);
+        row.createCell(off4).setCellValue("NAME");
+        row.getCell(off4).setCellStyle(boldstyle);
+        //Generate headers and init category map
+        HashMap<String, Counter> catHeard = new HashMap<>();
+        int offC = 1;
+        for (String cat : Category.names) {
+            catHeard.put(cat, new Counter(0));
+            row.createCell(off4 + offC).setCellValue(cat);
+            row.getCell(off4 + offC).setCellStyle(boldstyle);
+            offC++;
+        }
+        //Handle bonuses
+        row = getRow(sheet, rownum++);
+        row.createCell(off4).setCellValue("Bonuses");
+        for (Bonus q : Bonus.questionSet) {
+            if (q.controllingTeam == team.teamId) {
+                if (q.category != null) {
+                    catHeard.get(q.category.toString()).inc();
+                }
+                if (q.subcategory != null) {
+                    catHeard.get(q.subcategory).inc();
+                }
+            }
+        }
+        offC = 1;
+        for (String cat : Category.names) {
+            row.createCell(off4 + offC++).setCellValue(catHeard.get(cat).x);
+        }
+        //Handle players
+        for (String player : team.playerList) {
+            for (String cat : Category.names) {
+                catHeard.get(cat).reset();
+            }
+            for (Tossup q : Tossup.questionSet) {
+                if (q.getActive(team.teamId).contains(player)) {
+                    if (q.category != null) {
+                        catHeard.get(q.category.toString()).inc();
+                    }
+                    if (q.subcategory != null) {
+                        catHeard.get(q.subcategory).inc();
+                    }
+                }
+            }
+            row = getRow(sheet, rownum++);
+            row.createCell(off4).setCellValue(player);
+            offC = 1;
+            for (String cat : Category.names) {
+                row.createCell(off4 + offC++).setCellValue(catHeard.get(cat).x);
+            }
+        }
+
+        for (int i = 0; i < 52; i++) {
             sheet.autoSizeColumn(i);
         }
     }
 
+    private static Row getRow(XSSFSheet sheet, int row) {
+        if (sheet.getRow(row) == null) return sheet.createRow(row);
+        return sheet.getRow(row);
+    }
+
+    /**
+     * player-> <catgory,count></>
+     **/
     private static void getPlayerTUH(Team team) {
         for (String player : team.playerList) {
             team.playerData.get(player)[4] = 0;

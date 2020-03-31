@@ -1,5 +1,6 @@
 package com.uni;
 
+import com.uni.datamanager.CompileStats;
 import com.uni.question.Category;
 
 import javax.imageio.ImageIO;
@@ -21,8 +22,8 @@ public class Main {
     public static void main(String[] args) throws IOException, SetFormatException {
         launcherIcon = ImageIO.read(Main.class.getResourceAsStream("/fifteen.png"));
         Category.loadCategories("/categories");
-        Team.teams[0] = new Team("team 0", 0);
-        Team.teams[1] = new Team("team 1", 1);
+        Team.resetTeams();
+        new CompileStats().compile(new File[]{new File("./round2.xlsx"),new File("./round3.xlsx")}, "");
         window = new Window(1000, "i read qb questions");
 //        processFile(new File("./dogs.pdf"));
         PacketProcess.processFile(new File("./packet1.pdf"));

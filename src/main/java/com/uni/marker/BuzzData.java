@@ -1,8 +1,15 @@
 package com.uni.marker;
 
+import java.util.HashMap;
+
 public class BuzzData {
     //Array of point values
     public static final int[] pointVals = new int[]{15, 10, -5};
+    public static final HashMap<Integer, Integer> pointMap = new HashMap<Integer, Integer>() {{
+        put(15, 0);
+        put(10, 1);
+        put(-5, 2);
+    }};
     public int point;
     public String name;
     public int teamId;

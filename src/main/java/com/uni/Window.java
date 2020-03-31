@@ -1,5 +1,6 @@
 package com.uni;
 
+import com.uni.datamanager.CompileWindow;
 import com.uni.datamanager.ExportRound;
 import com.uni.marker.BuzzData;
 import com.uni.marker.QuestionWord;
@@ -89,9 +90,6 @@ public class Window extends JFrame {
             roundNumber = roundSelect.getSelectedIndex();
         });
         controlContainer.add(questionStatus);
-        controlContainer.add(saveButton);
-        controlContainer.add(new JLabel("Round: "));
-        controlContainer.add(roundSelect);
 
         //Container for category selection
         JPanel categoryContainer = new JPanel();
@@ -198,10 +196,13 @@ public class Window extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridheight = 2;
+        gbc.gridwidth = 2;
         gbc.weightx = 1;
         gbc.weighty = 1;
         scoreBoardContainer.add(scoreBoard, gbc);
-        gbc.gridx = 1;
+        gbc.gridx = 2;
+        gbc.weightx = 0.5;
+        gbc.gridwidth = 1;
         gbc.gridheight = 1;
         gbc.anchor = GridBagConstraints.CENTER;
         scoreLabelT1.setForeground(Team.teamColors[0]);
@@ -211,6 +212,25 @@ public class Window extends JFrame {
         scoreBoardContainer.add(scoreLabelT1, gbc);
         gbc.gridy = 1;
         scoreBoardContainer.add(scoreLabelT2, gbc);
+        gbc.gridx = 3;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.NONE;
+        JButton b = new JButton("Show answer");
+        b.setBackground(buttonColor);
+        b.addActionListener(e -> {
+            JOptionPane.showMessageDialog(null, Tossup.current().answer, "Answer", JOptionPane.INFORMATION_MESSAGE);
+        });
+        scoreBoardContainer.add(b, gbc);
+        JPanel saveContainer = new JPanel();
+        JButton compileButton = new JButton("Compile Total Summary");
+        compileButton.setBackground(buttonColor);
+        compileButton.addActionListener(e -> new CompileWindow());
+        saveContainer.add(new JLabel("Round: "));
+        saveContainer.add(roundSelect);
+        saveContainer.add(saveButton);
+        saveContainer.add(compileButton);
+        gbc.gridy = 1;
+        scoreBoardContainer.add(saveContainer, gbc);
 
         add(topContainer, BorderLayout.PAGE_START);
         add(questionContainer);
@@ -228,8 +248,10 @@ public class Window extends JFrame {
                 PacketProcess.processFile(filechoose.getSelectedFile());
                 fileStatus.setText("Read " + Tossup.questionSet.length + " questions from " + filechoose.getSelectedFile().getName());
                 //Reset player counts
+                Team.resetTeams();
                 Team.resetScores();
-                Main.window.updateScoreboard();
+                updateScoreboard();
+                playermanager = new PlayerManager();
                 setTossup(0);
             } catch (IOException | SetFormatException e1) {
                 fileStatus.setText("Error reading");
@@ -257,6 +279,7 @@ public class Window extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
+        gbc.anchor = GridBagConstraints.WEST;
         questionContainer.add(leadIn, gbc);
         for (int c = 0; c < 3; c++) {
             int i = c;
@@ -274,9 +297,8 @@ public class Window extends JFrame {
                 @SuppressWarnings("unchecked")
                 int s = ((JComboBox<String>) e.getSource()).getSelectedIndex() - 1;
                 Bonus.questionSet[Bonus.setidx].score[i] = s;
-                if (s > -1) {
-                    updateScore(Team.teams[s]);
-                }
+                updateScore(Team.teams[0]);
+                updateScore(Team.teams[1]);
             });
             questionContainer.add(q, gbc);
             gbc.gridx = 1;
@@ -310,12 +332,6 @@ public class Window extends JFrame {
         for (QuestionWord qw : q.words) {
             questionContainer.add(qw);
         }
-        JButton b = new JButton("Show answer");
-        b.setBackground(buttonColor);
-        b.addActionListener(e -> {
-            JOptionPane.showMessageDialog(null, q.answer, "Answer", JOptionPane.INFORMATION_MESSAGE);
-        });
-        questionContainer.add(b);
         questionContainer.validate();
         questionStatus.setText("Tossup " + q.id + " of " + Tossup.questionSet.length);
         updateScoreboard();
