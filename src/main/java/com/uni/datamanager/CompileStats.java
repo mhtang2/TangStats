@@ -25,8 +25,8 @@ public class CompileStats {
     private static int off_bonus = ExportRound.off_bonus;
     private static int headerRow = ExportRound.headerRow;
     private static int roundSheetHeader = ExportRound.roundSheetHeader;
-    XSSFWorkbook tossupBook = new XSSFWorkbook();
-    Sheet tossupSheet;
+    private XSSFWorkbook tossupBook = new XSSFWorkbook();
+    private Sheet tossupSheet;
     int tossupSheetRowN = 0;
     int correctlyGenerated = 0;
     int expectedGenerated = 0;
@@ -37,6 +37,7 @@ public class CompileStats {
         rankTeams();
         conversionData();
         //write out tossup sheet
+        for (int i = 0; i < 8; i++) tossupSheet.autoSizeColumn(i);
         writeExport("./exportdata/every_buzz.xlsx", tossupBook);
         JOptionPane.showMessageDialog(null, "Generated " + correctlyGenerated + "/" + expectedGenerated + " files");
     }
@@ -319,7 +320,15 @@ public class CompileStats {
                         tossupSheetRow.createCell(0).setCellValue(round);
                         tossupSheetRow.createCell(1).setCellValue(team.formattedName);
                         for (int i = 0; i <= 6; i++) {
-                            tossupSheetRow.createCell(i + 2).setCellValue(row.getCell(off2 + i) == null ? null : row.getCell(off2 + i).toString());
+                            String nil = null;
+                            Cell source = row.getCell(off2 + i);
+                            if (source == null) {
+                                tossupSheetRow.createCell(i + 2).setCellValue(nil);
+                            } else if (source.getCellTypeEnum() == CellType.NUMERIC) {
+                                tossupSheetRow.createCell(i + 2).setCellValue(source.getNumericCellValue());
+                            } else {
+                                tossupSheetRow.createCell(i + 2).setCellValue(source.toString());
+                            }
                         }
                         //Handle tossups
                         PlayerStat player = team.players.get(pure(row.getCell(off2 + 1).getStringCellValue()));

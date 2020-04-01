@@ -3,6 +3,7 @@ package com.uni;
 import com.uni.datamanager.CompileWindow;
 import com.uni.datamanager.ExportRound;
 import com.uni.marker.BuzzData;
+import com.uni.marker.Eval;
 import com.uni.marker.QuestionWord;
 import com.uni.question.Bonus;
 import com.uni.question.Category;
@@ -64,6 +65,7 @@ public class Window extends JFrame {
         JPanel selectContainer = new JPanel();
         JButton playersButton = new JButton("Manage Players");
         JButton selectButton = new JButton("Select packet");
+        Eval.eval();
         playersButton.setBackground(buttonColor);
         selectButton.setBackground(buttonColor);
         playersButton.addActionListener(e -> playermanager.setVisible(true));

@@ -5,9 +5,12 @@ import com.uni.marker.BuzzData;
 import com.uni.question.Category;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.NetworkInterface;
+import java.util.Enumeration;
 
 public class Main {
 
@@ -19,9 +22,13 @@ public class Main {
         Category.loadCategories("/categories");
         BuzzData.readConfig("./config.ini");
         Team.resetTeams();
-//        window = new Window(1000, "i read qb questions");
+        Main.window = new Window(1000, "i read qb questions");
         //test();
 
+    }
+
+    public static void errorMessage(String message) {
+        JOptionPane.showMessageDialog(null, message, "ERROR", JOptionPane.ERROR_MESSAGE);
     }
 
     private static void test() throws IOException {
