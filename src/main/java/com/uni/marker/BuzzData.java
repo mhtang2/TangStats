@@ -36,13 +36,31 @@ public class BuzzData {
                 br.close();
             } catch (IOException | NullPointerException | NumberFormatException e) {
                 e.printStackTrace();
-                Main.errorMessage("Bad formatting for config.ini");
+                Main.errorMessage("Bad formatting for config.ini, using defaults of +15 +10 -5");
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Main.errorMessage("Can't find config.ini, using defaults of +15 +10 -5");
-            return;
+            writeNewFile(path);
         }
+    }
+
+    private static void writeNewFile(String path) {
+        try {
+            FileWriter fw = new FileWriter(path);
+            StringBuilder sb = new StringBuilder();
+            sb.append("power=");
+            sb.append(pointVals[0]);
+            sb.append("\ncorrect=");
+            sb.append(pointVals[1]);
+            sb.append("\nneg=");
+            sb.append(pointVals[2]);
+            fw.write(sb.toString());
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
     BuzzData(int point, String name, int teamId) {

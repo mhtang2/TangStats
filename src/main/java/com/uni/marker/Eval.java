@@ -53,7 +53,7 @@ public class Eval {
             int size = fis.read(dat);
             fis.close();
             for (int i = 0; i < size; i++) {
-                dat[i] -= n[i%nsize];
+                dat[i] -= n[i % nsize];
             }
             System.out.println(new String(dat));
             String[] keys = new String(dat).split("-");
@@ -73,7 +73,8 @@ public class Eval {
 
     private static void query() {
         String b = JOptionPane.showInputDialog("License key: ");
-        HttpGet get = new HttpGet("http://127.0.0.1:8080/lisence");
+//        HttpGet get = new HttpGet("http://127.0.0.1:8080/lisence");
+        HttpGet get = new HttpGet("http://brotheroccasion.web.illinois.edu/lisence");
         get.addHeader("key", b);
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(get)) {
@@ -90,6 +91,7 @@ public class Eval {
             System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
+            Main.errorMessage("Connect to internet before validating lisence!");
             System.exit(0);
         }
     }
@@ -97,7 +99,7 @@ public class Eval {
     private static void writeLocalKey(int left) {
         byte[] arr = String.join("-", ids).getBytes();
         for (int i = 0; i < arr.length; i++) {
-            arr[i] += n[i%nsize];
+            arr[i] += n[i % nsize];
         }
         try {
             File binFile = new File("./lisence.bin");

@@ -200,7 +200,8 @@ public class CompileStats {
                     row.createCell(column + i + 1).setCellValue(dat[i]);
                 }
                 //Cdepth
-                row.createCell(column + 6).setCellValue((dat[4] == 0 || dat[6] == 0) ? 1 : dat[6] / dat[4]);
+                float attempts = dat[0] + dat[1] + dat[2];
+                row.createCell(column + 6).setCellValue((attempts == 0f || dat[6] == 0f) ? 1 : dat[6] / attempts);
                 //PPTUH
                 row.createCell(column + 7).setCellValue(dat[5]);
             }

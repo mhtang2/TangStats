@@ -1,7 +1,7 @@
 package com.uni.question;
 
 public class Bonus {
-    public static Bonus[] questionSet;
+    public static Bonus[] questionSet={};
     public static int setidx = 0;
     public String leadin;
     public String[] q = new String[3];

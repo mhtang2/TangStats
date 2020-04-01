@@ -27,6 +27,7 @@ public class Window extends JFrame {
 
     public PlayerManager playermanager = new PlayerManager();
     private JLabel fileStatus = new JLabel("No file selected");
+    private JButton toggleBonusButton;
     private JLabel questionStatus = new JLabel("Tossup 0 of 0");
     private JLabel teamControlLabel = new JLabel("No Bonus Control");
     private JCheckBox deadToggle = new JCheckBox("Dead: ");
@@ -129,18 +130,18 @@ public class Window extends JFrame {
 
         //Container for toggling bonus
         JPanel toggleContainer = new JPanel();
-        JButton toggleButton = new JButton("Show/Hide Bonus");
-        toggleButton.setBackground(buttonColor);
+        toggleBonusButton = new JButton("Show bonus");
+        toggleBonusButton.setBackground(buttonColor);
         teamControlLabel.setFont(defFont);
         deadToggle.setSelected(true);
         toggleContainer.add(deadToggle);
         toggleContainer.add(teamControlLabel);
-        toggleContainer.add(toggleButton);
+        toggleContainer.add(toggleBonusButton);
 
         deadToggle.addActionListener(e -> {
             Tossup.current().dead = deadToggle.isSelected();
         });
-        toggleButton.addActionListener(e -> {
+        toggleBonusButton.addActionListener(e -> {
             if (tossupMode) {
                 if (deadToggle.isSelected()) {
                     JOptionPane.showMessageDialog(null, "Can't show bonus for dead tossup", "Warning", JOptionPane.WARNING_MESSAGE);
@@ -222,7 +223,17 @@ public class Window extends JFrame {
         b.addActionListener(e -> {
             JOptionPane.showMessageDialog(null, Tossup.current().answer, "Answer", JOptionPane.INFORMATION_MESSAGE);
         });
-        scoreBoardContainer.add(b, gbc);
+        JPanel lrcontainer = new JPanel();
+        JButton leftButton = new JButton("<");
+        JButton rightButton = new JButton(">");
+        leftButton.setBackground(buttonColor);
+        rightButton.setBackground(buttonColor);
+        leftButton.addActionListener((e) -> setTossup(Tossup.setidx - 1));
+        rightButton.addActionListener((e) -> setTossup(Tossup.setidx + 1));
+        lrcontainer.add(b);
+        lrcontainer.add(leftButton);
+        lrcontainer.add(rightButton);
+        scoreBoardContainer.add(lrcontainer, gbc);
         JPanel saveContainer = new JPanel();
         JButton compileButton = new JButton("Compile Total Summary");
         compileButton.setBackground(buttonColor);
@@ -267,6 +278,7 @@ public class Window extends JFrame {
             return;
         }
         tossupMode = false;
+        toggleBonusButton.setText("Show Tossup");
         Bonus.setidx = idx;
         Bonus bonus = Bonus.questionSet[idx];
         bonus.controllingTeam = Tossup.current().controllingTeam;
@@ -314,6 +326,7 @@ public class Window extends JFrame {
         if (idx < 0 || idx >= Tossup.questionSet.length) {
             return;
         }
+        toggleBonusButton.setText("Show Bonus");
         tossupMode = true;
         Tossup.setidx = idx;
         Tossup q = Tossup.questionSet[idx];
@@ -338,7 +351,6 @@ public class Window extends JFrame {
         questionStatus.setText("Tossup " + q.id + " of " + Tossup.questionSet.length);
         updateScoreboard();
         repaint();
-        return;
     }
 
     private void handleKey(int keyCode) {
