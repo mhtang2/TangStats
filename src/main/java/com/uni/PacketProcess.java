@@ -1,6 +1,7 @@
 package com.uni;
 
 import com.uni.question.Bonus;
+import com.uni.question.Category;
 import com.uni.question.Tossup;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
@@ -9,6 +10,7 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +21,7 @@ public class PacketProcess {
         PDFTextStripper textStripper = new PDFTextStripper();
         String text = textStripper.getText(doc);
         doc.close();
-
+        Category.loadCategories("/categories");
 
         //Match for 1-20
         Pattern pattern = Pattern.compile("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", Pattern.MULTILINE);
@@ -55,7 +57,22 @@ public class PacketProcess {
             Pattern answerPattern = Pattern.compile("ANSWER:[^a-zA-Z\\d]", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
             Matcher answerMatcher = answerPattern.matcher(rawQuestion);
             if (answerMatcher.find()) {
-                tossupSet[i] = new Tossup(qId.get(i), rawQuestion.substring(0, answerMatcher.start()), rawQuestion.substring(answerMatcher.start()).split("<", 2)[0]);
+                //Match category
+                String rawAnswer = rawQuestion.substring(answerMatcher.start());
+                Pattern catPattern = Pattern.compile("\\{(.*?)}");
+                Matcher catMatcher = catPattern.matcher(rawAnswer);
+                tossupSet[i] = new Tossup(qId.get(i), rawQuestion.substring(0, answerMatcher.start()), rawAnswer.split("<", 2)[0]);
+                if (catMatcher.find()) {
+                    String[] cats = rawAnswer.substring(catMatcher.start() + 1, catMatcher.end() - 1).split(",", 2);
+                    String cat = cats[0].trim();
+                    String subcat = null;
+                    if (cats.length == 2) {
+                        subcat = cats[1].trim();
+                    }
+                    Category qcat = Category.addCategory(cat, subcat);
+                    tossupSet[i].category = qcat;
+                    tossupSet[i].subcategory = qcat.returnSubcat;
+                }
             } else {
                 tossupSet[i] = new Tossup(qId.get(i), rawQuestion, "NO ANSWER PROVIDED");
                 JOptionPane.showMessageDialog(null, "Answer formatted incorrectly for q" + qId.get(i));
@@ -74,7 +91,7 @@ public class PacketProcess {
 
             //Locate [10]s
             int[] tenIdx = new int[3];
-            Pattern tenPattern = Pattern.compile("^\\[10]", Pattern.MULTILINE);
+            Pattern tenPattern = Pattern.compile("\\[10]", Pattern.MULTILINE);
             Matcher tenMatcher = tenPattern.matcher(rawQuestion);
             //Locate ANSWERs
             int[] answerIdx = new int[3];
@@ -106,5 +123,6 @@ public class PacketProcess {
         }
         Tossup.questionSet = tossupSet;
         Bonus.questionSet = bonusSet;
+        Main.window.onCategoryChange();
     }
 }

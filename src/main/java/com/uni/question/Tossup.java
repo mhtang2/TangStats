@@ -7,7 +7,7 @@ import com.uni.marker.QuestionWord;
 import java.util.ArrayList;
 
 public class Tossup {
-    public static Tossup[] questionSet={};
+    public static Tossup[] questionSet = {};
     public static int setidx = -1;
 
     String question;
@@ -87,4 +87,7 @@ public class Tossup {
     }
 
 
+    public void setCategories(String cat, String subcat) {
+        subcategory = subcat;
+    }
 }

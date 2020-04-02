@@ -46,7 +46,7 @@ public class Team {
         teamNameLabel = new UILabel(name, true);
         teamNameLabel.setForeground(teamColors[teamId]);
         UIButton changeName = new UIButton("Set Team Name");
-        UIButton loadButton = new UIButton("Load file");
+        UIButton loadButton = new UIButton("Import from file");
         loadButton.addButtonListener(e -> chooseFileDialog());
         teamNameContainer.add(teamNameLabel);
         teamNameContainer.add(changeName);

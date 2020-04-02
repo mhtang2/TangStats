@@ -40,7 +40,7 @@ public class Window extends JFrame {
     private JPanel bottomContainer = new JPanel();
     private UILabel scoreLabelT1 = new UILabel("Team 0");
     private UILabel scoreLabelT2 = new UILabel("Team 1");
-    private JComboBox<Category> categorySelect = new JComboBox<>(Category.categories);
+    private JComboBox<Category> categorySelect = new JComboBox<>(Category.categories.toArray(new Category[0]));
     private JComboBox<String> subcategorySelect = new JComboBox<>(new String[]{null});
     private JComboBox<String> roundSelect;
     private JFrame scoreboard = new JFrame("Scoreboard");
@@ -103,7 +103,7 @@ public class Window extends JFrame {
                     Bonus.questionSet[Bonus.setidx].category = selected;
                 }
                 if (selected != null) {
-                    subcategorySelect.setModel(new DefaultComboBoxModel<>(selected.subcategories));
+                    subcategorySelect.setModel(new DefaultComboBoxModel<>(selected.subcategories.toArray(new String[0])));
                 } else {
                     subcategorySelect.setModel(new DefaultComboBoxModel<>(new String[]{null}));
                 }
@@ -122,7 +122,7 @@ public class Window extends JFrame {
             }
         });
 
-        GridBagConstraints gbc = new GridBagConstraints();
+        GridBagConstraints gbc;
         //Container for toggling bonus
         JPanel toggleContainer = new JPanel();
         toggleContainer.setLayout(new GridLayout(1, 2));
@@ -250,6 +250,12 @@ public class Window extends JFrame {
         questionContainer.grabFocus();
         revalidate();
 
+    }
+
+    public void onCategoryChange() {
+        categorySelect.setModel(new DefaultComboBoxModel<>(Category.categories.toArray(new Category[0])));
+        Tossup t0 = Tossup.questionSet[0];
+        subcategorySelect.setModel(new DefaultComboBoxModel<>(t0 == null || t0.category == null ? new String[]{null} : t0.category.subcategories.toArray(new String[0])));
     }
 
     private void openSet() {

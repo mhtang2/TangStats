@@ -151,7 +151,7 @@ public class CompileStats {
         //list of categories + "Total"
         List<String> catsAndTotal = new ArrayList<>();
         catsAndTotal.add("Total");
-        catsAndTotal.addAll(Arrays.asList(Category.names));
+        catsAndTotal.addAll(Category.names);
 
         //Generate list of teams;
         List<TeamStat> teamRanked = new ArrayList<>(teams.values());
@@ -222,23 +222,24 @@ public class CompileStats {
         writeExport("./exportdata/ranking.xlsx", wb);
     }
 
-    private void buildData(File[] files) {
+    private void processRoundSheets(File[] files) {
+        Category.loadCategories("/categories");
         for (File file : files) {
+            //Process round sheet and make categories
             try {
                 FileInputStream excelFile = new FileInputStream(file);
                 Workbook wb = new XSSFWorkbook(excelFile);
-                //Process round sheet
                 Sheet roundSheet = wb.getSheetAt(0);
                 int round = (int) roundSheet.getRow(0).getCell(1).getNumericCellValue();
                 System.out.println(round + " " + file.getName());
                 ArrayList<TossupStat> tossupStats = tossupMap.get(round);
                 ArrayList<BonusStat> bonusStats = bonusMap.get(round);
                 if (tossupStats == null) {
-                    tossupStats = new ArrayList<TossupStat>();
+                    tossupStats = new ArrayList<>();
                     tossupMap.put(round, tossupStats);
                 }
                 if (bonusStats == null) {
-                    bonusStats = new ArrayList<BonusStat>();
+                    bonusStats = new ArrayList<>();
                     bonusMap.put(round, bonusStats);
                 }
                 Row row;
@@ -254,6 +255,9 @@ public class CompileStats {
                             tossup = new TossupStat(row.getCell(0), row.getCell(1));
                             tossupStats.add(tossup);
                         }
+                        //Add to categories
+                        if (tossup.cat != null && tossup.cat.length() > 0)
+                            Category.addCategory(tossup.cat, tossup.subcat);
                         if (!val.equals("UNHEARD")) {
                             int[] dat = Arrays.stream(val.split("/"))
                                     .mapToInt(Integer::parseInt)
@@ -284,6 +288,9 @@ public class CompileStats {
                             bonus = new BonusStat(row.getCell(off_bonus), row.getCell(off_bonus + 1));
                             bonusStats.add(bonus);
                         }
+                        //Add to categories
+                        if (bonus.cat != null && bonus.cat.length() > 0) Category.addCategory(bonus.cat, bonus.subcat);
+
                         if (val != -1) {
                             //DEAD
                             bonus.stats[3 - val]++;
@@ -295,6 +302,22 @@ public class CompileStats {
                     }
                     questionN++;
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
+                JOptionPane.showMessageDialog(null, file.getName() + " CORRUPTED", "Warning", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+        System.out.println(Category.names);
+    }
+
+    private void buildData(File[] files) {
+        processRoundSheets(files);
+        for (File file : files) {
+            try {
+                FileInputStream excelFile = new FileInputStream(file);
+                Workbook wb = new XSSFWorkbook(excelFile);
+                int round = (int) wb.getSheetAt(0).getRow(0).getCell(1).getNumericCellValue();
+                Row row;
 
                 //Loop through team sheets
                 for (int teamId = 0; teamId < 2; teamId++) {
@@ -392,10 +415,11 @@ public class CompileStats {
                     n = headerRow + 3;
                     while ((row = sheet.getRow(n)) != null && row.getCell(off4) != null) {
                         String name = pure(row.getCell(off4).getStringCellValue());
-                        for (int i = 0; i < Category.names.length; i++) {
+                        //TODO: fix bullshit
+                        for (int i = 0; i < Category.names.size(); i++) {
                             int num = (int) row.getCell(off4 + i + 1).getNumericCellValue();
                             PlayerStat player = team.players.get(name);
-                            player.tossupData.get(Category.names[i])[4] += num;
+                            player.tossupData.get(Category.names.get(i))[4] += num;
                         }
                         n++;
                     }
@@ -419,6 +443,7 @@ public class CompileStats {
         }
         teams.values().forEach(CompileStats::printTeam);
     }
+
 
     private static void printTeam(TeamStat team) {
         System.out.println(team.formattedName);
