@@ -65,7 +65,7 @@ public class Category {
         //Found
         if (idx < categories.size()) {
             ArrayList<String> subcategories = categories.get(idx).subcategories;
-            if (subcat != null && subcat.length()>0) {
+            if (subcat != null && subcat.length() > 0) {
                 String puresubcat = pure(subcat);
                 int idx2 = indexOfCat(subcategories, puresubcat);
                 if (idx2 == subcategories.size()) {

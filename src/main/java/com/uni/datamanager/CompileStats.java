@@ -231,7 +231,6 @@ public class CompileStats {
                 Workbook wb = new XSSFWorkbook(excelFile);
                 Sheet roundSheet = wb.getSheetAt(0);
                 int round = (int) roundSheet.getRow(0).getCell(1).getNumericCellValue();
-                System.out.println(round + " " + file.getName());
                 ArrayList<TossupStat> tossupStats = tossupMap.get(round);
                 ArrayList<BonusStat> bonusStats = bonusMap.get(round);
                 if (tossupStats == null) {
@@ -412,14 +411,20 @@ public class CompileStats {
                         n++;
                     }
                     //Handle heard
+                    //First get list of categories seen in the round
+                    ArrayList<String> localCats = new ArrayList<>();
+                    Cell localcell;
+                    row = sheet.getRow(headerRow + 1);
+                    for (int i = 1; (localcell = row.getCell(off4 + i)) != null; i++) {
+                        localCats.add(localcell.getStringCellValue().trim());
+                    }
                     n = headerRow + 3;
                     while ((row = sheet.getRow(n)) != null && row.getCell(off4) != null) {
                         String name = pure(row.getCell(off4).getStringCellValue());
-                        //TODO: fix bullshit
-                        for (int i = 0; i < Category.names.size(); i++) {
+                        for (int i = 0; i < localCats.size(); i++) {
                             int num = (int) row.getCell(off4 + i + 1).getNumericCellValue();
                             PlayerStat player = team.players.get(name);
-                            player.tossupData.get(Category.names.get(i))[4] += num;
+                            player.tossupData.get(localCats.get(i))[4] += num;
                         }
                         n++;
                     }
