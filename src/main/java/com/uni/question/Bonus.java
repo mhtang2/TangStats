@@ -1,7 +1,10 @@
 package com.uni.question;
 
+import java.awt.*;
+
 public class Bonus {
-    public static Bonus[] questionSet={};
+    public static Font font = new Font(Font.SERIF, Font.BOLD, 15);
+    public static Bonus[] questionSet = {};
     public static int setidx = 0;
     public String leadin;
     public String[] q = new String[3];

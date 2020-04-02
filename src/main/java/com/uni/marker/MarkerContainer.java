@@ -1,6 +1,8 @@
 package com.uni.marker;
 
 import com.uni.Team;
+import com.uni.gui.UIButton;
+import com.uni.gui.UILabel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,30 +17,31 @@ public class MarkerContainer extends JPanel {
         this.qword = qword;
         this.teamId = teamId;
         setLayout(new GridLayout(0, 1));
-        JLabel teamName = new JLabel(Team.teams[teamId].name);
+        UILabel teamName = new UILabel(Team.teams[teamId].name,true);
         teamName.setForeground(Team.teamColors[teamId]);
         add(teamName);
         for (String name : qword.parentQuestion.getActive(teamId)) {
             JPanel player = new JPanel();
-            player.add(new JLabel(name));
-            JButton p10 = new JButton("+10");
-            JButton p15 = new JButton("+15");
-            JButton p5 = new JButton("-5");
+            player.setLayout(new GridLayout(1,4));
+            player.add(new UILabel(name+": ",true));
+            UIButton p10 = new UIButton("+10");
+            UIButton p15 = new UIButton("+15");
+            UIButton p5 = new UIButton("-5");
             p15.setOpaque(true);
             p10.setOpaque(true);
             p5.setOpaque(true);
-            p15.setBackground(Color.white);
-            p10.setBackground(Color.white);
-            p5.setBackground(Color.white);
-            p15.addActionListener(e -> {
+            p15.setNorm(UIButton.defaultNorm);
+            p10.setNorm(UIButton.defaultNorm);
+            p5.setNorm(UIButton.defaultNorm);
+            p15.addButtonListener(e -> {
                 qword.handle(new BuzzData(0, name, teamId));
                 dialog.update();
             });
-            p10.addActionListener(e -> {
+            p10.addButtonListener(e -> {
                 qword.handle(new BuzzData(1, name, teamId));
                 dialog.update();
             });
-            p5.addActionListener(e -> {
+            p5.addButtonListener(e -> {
                 qword.handle(new BuzzData(2, name, teamId));
                 dialog.update();
             });
@@ -60,26 +63,26 @@ public class MarkerContainer extends JPanel {
             add(player);
         }
         if (qword.parentQuestion.getActive(teamId).isEmpty()) {
-            add(new JLabel("Add more players dawg"));
+            add(new UILabel("Add more players dawg"));
         }
     }
 
     void update() {
         for (int i = 0; i < qword.parentQuestion.getActive(teamId).size(); i++) {
             String name = qword.parentQuestion.getActive(teamId).get(i);
-            JButton p15 = (JButton) ((JPanel) getComponent(i + 1)).getComponent(1);
-            JButton p10 = (JButton) ((JPanel) getComponent(i + 1)).getComponent(2);
-            JButton p5 = (JButton) ((JPanel) getComponent(i + 1)).getComponent(3);
-            p15.setBackground(Color.white);
-            p10.setBackground(Color.white);
-            p5.setBackground(Color.white);
+            UIButton p15 = (UIButton) ((JPanel) getComponent(i + 1)).getComponent(1);
+            UIButton p10 = (UIButton) ((JPanel) getComponent(i + 1)).getComponent(2);
+            UIButton p5 = (UIButton) ((JPanel) getComponent(i + 1)).getComponent(3);
+            p15.setNorm(UIButton.defaultNorm);
+            p10.setNorm(UIButton.defaultNorm);
+            p5.setNorm(UIButton.defaultNorm);
             if (qword.buzzData.samePerson(name, teamId)) {
                 if (qword.buzzData.point == 0) {
-                    p15.setBackground(Color.gray);
+                    p15.setNorm(Color.gray);
                 } else if (qword.buzzData.point == 1) {
-                    p10.setBackground(Color.gray);
+                    p10.setNorm(Color.gray);
                 } else if (qword.buzzData.point == 2) {
-                    p5.setBackground(Color.gray);
+                    p5.setNorm(Color.gray);
                 }
             }
         }

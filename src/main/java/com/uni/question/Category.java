@@ -13,7 +13,6 @@ public class Category {
     /**
      * store indicies of major cats
      **/
-    public static HashSet<Integer> majorCats = new HashSet<>();
     String name;
     public String[] subcategories;
 
@@ -31,7 +30,6 @@ public class Category {
             while ((line = br.readLine()) != null) {
                 String[] split = line.split(" -> ", 2);
                 Category cat = new Category(split[0]);
-                majorCats.add(nameList.size());
                 nameList.add(split[0]);
                 String[] subcategories = split[1].split(", ");
                 Collections.addAll(nameList, subcategories);

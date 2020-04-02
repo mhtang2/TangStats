@@ -31,7 +31,7 @@ public class Eval {
                 NetworkInterface nif = n.nextElement();
                 byte[] mac = nif.getHardwareAddress();
                 if (nif.getHardwareAddress() != null) {
-                    System.out.println(nif.getName());
+//                    System.out.println(nif.getName());
                     StringBuilder sb = new StringBuilder();
                     for (byte aMac : mac) {
                         sb.append(String.format("%02X", aMac));
@@ -42,7 +42,7 @@ public class Eval {
         } catch (SocketException e) {
             e.printStackTrace();
         }
-        System.out.println(ids);
+//        System.out.println(ids);
         if (ids.isEmpty()) return;
         try {
             //Look lisence
@@ -55,7 +55,7 @@ public class Eval {
             for (int i = 0; i < size; i++) {
                 dat[i] -= n[i % nsize];
             }
-            System.out.println(new String(dat));
+//            System.out.println(new String(dat));
             String[] keys = new String(dat).split("-");
             for (String key : keys) {
                 if (ids.contains(key)) {

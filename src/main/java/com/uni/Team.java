@@ -1,5 +1,7 @@
 package com.uni;
 
+import com.uni.gui.UIButton;
+import com.uni.gui.UILabel;
 import com.uni.marker.BuzzData;
 import com.uni.question.Bonus;
 import com.uni.question.Tossup;
@@ -33,13 +35,14 @@ public class Team {
         //Container for team 1 players
         canvas.setLayout(new GridLayout(0, 1));
         JPanel inputContainer = new JPanel();
-        inputContainer.add(new JLabel("Add Player: "));
+        inputContainer.add(new UILabel("Add Player: "));
         inputContainer.add(nameField);
 
         JPanel teamNameContainer = new JPanel();
-        JLabel teamNameLabel = new JLabel(name);
+        teamNameContainer.setLayout(new GridLayout(1, 2));
+        UILabel teamNameLabel = new UILabel(name, true);
         teamNameLabel.setForeground(teamColors[teamId]);
-        JButton changeName = new JButton("Set Team Name");
+        UIButton changeName = new UIButton("Set Team Name");
 
         teamNameContainer.add(teamNameLabel);
         teamNameContainer.add(changeName);
@@ -47,7 +50,7 @@ public class Team {
         canvas.add(teamNameContainer);
         canvas.add(inputContainer);
 
-        changeName.addActionListener((actionEvent) -> {
+        changeName.addButtonListener((actionEvent) -> {
             String newName = JOptionPane.showInputDialog("New team name: ");
             if (newName != null && newName.length() > 0) {
                 this.name = newName;
@@ -74,11 +77,11 @@ public class Team {
 
     private void addPlayerContainer(String playerName, boolean active) {
         JPanel playerContainer = new JPanel();
-        JLabel removeButton = new JLabel();
+        UILabel removeButton = new UILabel();
         removeButton.setIcon(PlayerManager.xIcon);
         JToggleButton togglePlayer = new JToggleButton(active ? "Active" : "Inactive", !active);
-
-        playerContainer.add(new JLabel(playerName));
+        togglePlayer.setBackground(Color.white);
+        playerContainer.add(new UILabel(playerName));
         playerContainer.add(togglePlayer);
         playerContainer.add(removeButton);
         canvas.add(playerContainer);

@@ -23,7 +23,7 @@ public class Main {
         BuzzData.readConfig("./config.ini");
         Team.resetTeams();
         Main.window = new Window(1000, "i read qb questions");
-        //test();
+        test();
 
     }
 
@@ -32,16 +32,16 @@ public class Main {
     }
 
     private static void test() throws IOException {
-        new CompileStats().compile(new File[]{new File("./round2.xlsx"), new File("./round3.xlsx"), new File("./round22.xlsx")});
-        PacketProcess.processFile(new File("./dogs.pdf"));
+//        new CompileStats().compile(new File[]{new File("./round2.xlsx"), new File("./round3.xlsx"), new File("./round22.xlsx")});
+//        PacketProcess.processFile(new File("./dogs.pdf"));
         PacketProcess.processFile(new File("./packet1.pdf"));
+        window.setTossup(0);
         for (int i = 0; i < 5; i++) {
             Team.teams[0].nameField.setText("T1 " + i);
             Team.teams[0].addPlayer();
             Team.teams[1].nameField.setText("T2 " + i);
             Team.teams[1].addPlayer();
         }
-        window.setTossup(0);
     }
 
 }

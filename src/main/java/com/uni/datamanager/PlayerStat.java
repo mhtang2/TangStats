@@ -10,7 +10,7 @@ public class PlayerStat {
     String formattedName;
     String teamFormattedName;
     /**
-     * Category -> int[15,10,-5,points,heard,PPTUH,cdepth]
+     * Category -> int[15,10,-5,points,heard,PPTUH,cdepthTOTAL]
      **/
     Map<String, float[]> tossupData = new HashMap<>();
 
@@ -27,7 +27,9 @@ public class PlayerStat {
         int pointIDX = BuzzData.pointMap.get(points);
         tossupData.get(cat)[pointIDX]++;
         tossupData.get(cat)[3] += points;
-        tossupData.get(cat)[6] += cdepth;
+        if (points > 0) {
+            tossupData.get(cat)[6] += cdepth;
+        }
         if (majorCat) {
             tossupData.get("Total")[pointIDX]++;
             tossupData.get("Total")[3] += points;
@@ -39,6 +41,8 @@ public class PlayerStat {
         int pointIDX = BuzzData.pointMap.get(points);
         tossupData.get("Total")[pointIDX]++;
         tossupData.get("Total")[3] += points;
-        tossupData.get("Total")[6] += cdepth;
+        if (points > 0) {
+            tossupData.get("Total")[6] += cdepth;
+        }
     }
 }

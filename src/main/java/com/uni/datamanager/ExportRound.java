@@ -7,9 +7,11 @@ import com.uni.marker.QuestionWord;
 import com.uni.question.Bonus;
 import com.uni.question.Category;
 import com.uni.question.Tossup;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -50,7 +52,7 @@ public class ExportRound {
         }
         if (!(missingBonuses.isEmpty() && missingTossups.isEmpty())) {
             int res = JOptionPane.showConfirmDialog(null, "Missing categories for\nTossups: " + missingTossups + "\nMissing bonuses: " + missingBonuses + "\nContinue?", "Warning", JOptionPane.YES_NO_OPTION);
-            if (res !=JOptionPane.OK_OPTION){
+            if (res != JOptionPane.OK_OPTION) {
                 System.out.println(res);
                 return;
             }
@@ -67,7 +69,8 @@ public class ExportRound {
                 XSSFSheet roundSheet = workbook.createSheet("Round Overview");
                 XSSFSheet teamSheet1 = workbook.createSheet("TeamOverview1");
                 XSSFSheet teamSheet2 = workbook.createSheet("TeamOverview2");
-
+                XSSFCellStyle numberStyle = workbook.createCellStyle();
+                numberStyle.setDataFormat(workbook.createDataFormat().getFormat("0.000"));
                 CellStyle style = workbook.createCellStyle();
                 Font font = workbook.createFont();
                 font.setBold(true);
@@ -158,8 +161,8 @@ public class ExportRound {
                     row.createCell(off_bonus + 2).setCellValue(right);
                 }
 
-                writeTeamSheet(teamSheet1, Team.teams[0], style);
-                writeTeamSheet(teamSheet2, Team.teams[1], style);
+                writeTeamSheet(teamSheet1, Team.teams[0], style, numberStyle);
+                writeTeamSheet(teamSheet2, Team.teams[1], style, numberStyle);
                 for (int i = 0; i < 1; i++) {
                     roundSheet.autoSizeColumn(i);
                 }
@@ -172,7 +175,7 @@ public class ExportRound {
         }
     }
 
-    private static void writeTeamSheet(XSSFSheet sheet, Team team, CellStyle boldstyle) {
+    private static void writeTeamSheet(XSSFSheet sheet, Team team, CellStyle boldstyle, CellStyle numberStyle) {
         int rownum = 0;
         Row row = getRow(sheet, rownum++);
         row.createCell(0).setCellValue("Team");
@@ -217,8 +220,10 @@ public class ExportRound {
                     row.createCell(off2 + 2).setCellValue(BuzzData.pointVals[data.point]);
                     row.createCell(off2 + 3).setCellValue(tossup.category == null ? "" : tossup.category.toString());
                     row.createCell(off2 + 4).setCellValue(tossup.subcategory);
-                    row.createCell(off2 + 5).setCellValue(tossup.answer.split("\\[", 2)[0]);
-                    row.createCell(off2 + 6).setCellValue((double) qword.wordID / tossup.size);
+                    row.createCell(off2 + 5).setCellValue(tossup.answer.split("[\\[\\(]", 2)[0].replace("ANSWER: ", "").replaceAll("[^\\x00-\\x7F]", ""));
+                    Cell cdepthcell = row.createCell(off2 + 6);
+                    cdepthcell.setCellValue((double) qword.wordID / tossup.size);
+                    cdepthcell.setCellStyle(numberStyle);
                 }
             }
         }

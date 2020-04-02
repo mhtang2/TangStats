@@ -52,7 +52,7 @@ public class PacketProcess {
             //Remove number
 //            rawQuestion = rawQuestion.replaceFirst("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", "");
             //Split off answer line
-            Pattern answerPattern = Pattern.compile("^ANSWER:[^a-zA-Z\\d]", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+            Pattern answerPattern = Pattern.compile("ANSWER:[^a-zA-Z\\d]", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
             Matcher answerMatcher = answerPattern.matcher(rawQuestion);
             if (answerMatcher.find()) {
                 tossupSet[i] = new Tossup(qId.get(i), rawQuestion.substring(0, answerMatcher.start()), rawQuestion.substring(answerMatcher.start()).split("<", 2)[0]);
@@ -78,7 +78,7 @@ public class PacketProcess {
             Matcher tenMatcher = tenPattern.matcher(rawQuestion);
             //Locate ANSWERs
             int[] answerIdx = new int[3];
-            Pattern answerPattern = Pattern.compile("^ANSWER:[^a-zA-Z\\d]", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
+            Pattern answerPattern = Pattern.compile("ANSWER:[^a-zA-Z\\d]", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
             Matcher answerMatcher = answerPattern.matcher(rawQuestion);
 
             for (int j = 0; j < 3; j++) {

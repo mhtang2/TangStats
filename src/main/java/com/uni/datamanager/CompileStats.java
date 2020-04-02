@@ -1,12 +1,11 @@
 package com.uni.datamanager;
 
+import com.uni.Team;
 import com.uni.question.Bonus;
 import com.uni.question.Category;
 import com.uni.question.Tossup;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFFont;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.*;
 
 import javax.swing.*;
 import java.io.File;
@@ -27,6 +26,7 @@ public class CompileStats {
     private static int roundSheetHeader = ExportRound.roundSheetHeader;
     private XSSFWorkbook tossupBook = new XSSFWorkbook();
     private Sheet tossupSheet;
+    XSSFCellStyle tossupnumberStyle;
     int tossupSheetRowN = 0;
     int correctlyGenerated = 0;
     int expectedGenerated = 0;
@@ -46,7 +46,7 @@ public class CompileStats {
         //Tossups
         XSSFWorkbook wb = new XSSFWorkbook();
         Sheet sheet = wb.createSheet("Tossups");
-        CellStyle style = wb.createCellStyle();
+        XSSFCellStyle style = wb.createCellStyle();
         Font font = wb.createFont();
         font.setBold(true);
         font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
@@ -121,8 +121,10 @@ public class CompileStats {
     private void tossupSheetSetup() {
         //Setup sheet
         tossupSheet = tossupBook.createSheet();
+        tossupnumberStyle = tossupBook.createCellStyle();
+        tossupnumberStyle.setDataFormat(tossupBook.createDataFormat().getFormat("0.000"));
         Row tossupSheetRow = tossupSheet.createRow(tossupSheetRowN++);
-        CellStyle style = tossupBook.createCellStyle();
+        XSSFCellStyle style = tossupBook.createCellStyle();
         Font font = tossupBook.createFont();
         font.setBold(true);
         font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
@@ -138,13 +140,14 @@ public class CompileStats {
 
     private void rankTeams() {
         XSSFWorkbook wb = new XSSFWorkbook();
-        CellStyle style = wb.createCellStyle();
+        XSSFCellStyle style = wb.createCellStyle();
         Font font = wb.createFont();
         font.setBold(true);
         font.setFontName(XSSFFont.DEFAULT_FONT_NAME);
         font.setFontHeightInPoints((short) 12);
         style.setFont(font);
-
+        XSSFCellStyle numberStyle = wb.createCellStyle();
+        numberStyle.setDataFormat(wb.createDataFormat().getFormat("0.000"));
         //list of categories + "Total"
         List<String> catsAndTotal = new ArrayList<>();
         catsAndTotal.add("Total");
@@ -165,7 +168,9 @@ public class CompileStats {
             for (TeamStat ts : teamRanked) {
                 row = getRow(sheet, rownum++);
                 row.createCell(column).setCellValue(ts.formattedName);
-                row.createCell(column + 1).setCellValue(ts.bonusData.get(cat)[2]);
+                Cell cell = row.createCell(column + 1);
+                cell.setCellValue(ts.bonusData.get(cat)[2]);
+                cell.setCellStyle(numberStyle);
             }
             column += 3;
         }
@@ -200,10 +205,14 @@ public class CompileStats {
                     row.createCell(column + i + 1).setCellValue(dat[i]);
                 }
                 //Cdepth
-                float attempts = dat[0] + dat[1] + dat[2];
-                row.createCell(column + 6).setCellValue((attempts == 0f || dat[6] == 0f) ? 1 : dat[6] / attempts);
+                float correct = dat[0] + dat[1];
+                Cell cell = row.createCell(column + 6);
+                cell.setCellValue((correct == 0f || dat[6] == 0f) ? 1 : dat[6] / correct);
+                cell.setCellStyle(numberStyle);
                 //PPTUH
-                row.createCell(column + 7).setCellValue(dat[5]);
+                cell = row.createCell(column + 7);
+                cell.setCellValue(dat[5]);
+                cell.setCellStyle(numberStyle);
             }
             column += headers.length;
         }
@@ -309,6 +318,7 @@ public class CompileStats {
                             player = new PlayerStat(formatPlayer, formatTeam);
                             team.players.put(purePlayer, player);
                         }
+                        player.tossupData.get("Total")[4] += row.getCell(5).getNumericCellValue();
                         n++;
                     }
                     //Handle Tossups &&&& write to the sheet tracking tossups
@@ -320,7 +330,7 @@ public class CompileStats {
                         tossupSheetRow = tossupSheet.createRow(tossupSheetRowN++);
                         tossupSheetRow.createCell(0).setCellValue(round);
                         tossupSheetRow.createCell(1).setCellValue(team.formattedName);
-                        for (int i = 0; i <= 6; i++) {
+                        for (int i = 0; i <= 5; i++) {
                             String nil = null;
                             Cell source = row.getCell(off2 + i);
                             if (source == null) {
@@ -331,6 +341,9 @@ public class CompileStats {
                                 tossupSheetRow.createCell(i + 2).setCellValue(source.toString());
                             }
                         }
+                        Cell cdepthcell = tossupSheetRow.createCell(8);
+                        cdepthcell.setCellStyle(tossupnumberStyle);
+                        cdepthcell.setCellValue(row.getCell(off2 + 6).getNumericCellValue());
                         //Handle tossups
                         PlayerStat player = team.players.get(pure(row.getCell(off2 + 1).getStringCellValue()));
                         if (player == null) continue;
@@ -383,9 +396,6 @@ public class CompileStats {
                             int num = (int) row.getCell(off4 + i + 1).getNumericCellValue();
                             PlayerStat player = team.players.get(name);
                             player.tossupData.get(Category.names[i])[4] += num;
-                            if (Category.majorCats.contains(i)) {
-                                player.tossupData.get("Total")[4] += num;
-                            }
                         }
                         n++;
                     }
@@ -407,7 +417,7 @@ public class CompileStats {
                 }
             }
         }
-//        teams.values().forEach(CompileStats::printTeam);
+        teams.values().forEach(CompileStats::printTeam);
     }
 
     private static void printTeam(TeamStat team) {
