@@ -10,6 +10,8 @@ import org.apache.xmlbeans.impl.xb.xsdschema.impl.FormChoiceImpl;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,6 +26,7 @@ public class Team {
     //Stuff for adding things in player manager
     JPanel canvas = new JPanel();
     JTextField nameField = new JTextField(20);
+    UILabel teamNameLabel;
     public String name;
     public int[] teamStats = new int[]{0, 0, 0, 0};
     //0 or 1 value
@@ -39,13 +42,15 @@ public class Team {
         inputContainer.add(nameField);
 
         JPanel teamNameContainer = new JPanel();
-        teamNameContainer.setLayout(new GridLayout(1, 2));
-        UILabel teamNameLabel = new UILabel(name, true);
+        teamNameContainer.setLayout(new GridLayout(1, 3));
+        teamNameLabel = new UILabel(name, true);
         teamNameLabel.setForeground(teamColors[teamId]);
         UIButton changeName = new UIButton("Set Team Name");
-
+        UIButton loadButton = new UIButton("Load file");
+        loadButton.addButtonListener(e -> chooseFileDialog());
         teamNameContainer.add(teamNameLabel);
         teamNameContainer.add(changeName);
+        teamNameContainer.add(loadButton);
         nameField.addActionListener(actionEvent -> addPlayer());
         canvas.add(teamNameContainer);
         canvas.add(inputContainer);
@@ -58,6 +63,34 @@ public class Team {
                 Main.window.playermanager.updateGraphics();
             }
         });
+    }
+
+    private void chooseFileDialog() {
+        ArrayList<String> teams = new ArrayList<>();
+        HashMap<String, String> teamMap = new HashMap<>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader("./teams.txt"));
+            String line;
+            while ((line = br.readLine()) != null) {
+                int idx = line.indexOf(',');
+                String team = line.substring(0, idx);
+                teams.add(team);
+                teamMap.put(team, line.substring(idx + 1));
+            }
+            String choice = (String) JOptionPane.showInputDialog(null, "Choose team to import",
+                    "Import", JOptionPane.QUESTION_MESSAGE, null, teams.toArray(), teams.get(0));
+            if (choice != null) {
+                for (String s : teamMap.get(choice).split(",")) {
+                    addPlayer(s.trim());
+                }
+                name = choice;
+                teamNameLabel.setText(name);
+                Main.window.playermanager.updateGraphics();
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void resetTeams() {
@@ -117,6 +150,10 @@ public class Team {
             return;
         }
         nameField.setText("");
+        addPlayer(playerName);
+    }
+
+    void addPlayer(String playerName) {
         playerList.add(playerName);
         Tossup.current().getActive(teamId).add(playerName);
         playerData.put(playerName, new int[]{0, 0, 0, 0, 0});

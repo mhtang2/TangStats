@@ -19,7 +19,7 @@ public class UIButton extends JPanel {
         setBackground(norm);
         label.setText(text);
         setLayout(new GridBagLayout());
-        setBorder(new EmptyBorder(10, 10, 10, 10));
+        setBorder(new EmptyBorder(5, 10, 5, 10));
         add(label, new GridBagConstraints());
         addButtonListener(bl);
 
