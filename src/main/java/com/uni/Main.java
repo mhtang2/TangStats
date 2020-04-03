@@ -9,8 +9,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.NetworkInterface;
-import java.util.Enumeration;
 
 public class Main {
 

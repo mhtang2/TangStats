@@ -12,6 +12,7 @@ import com.uni.question.Category;
 import com.uni.question.Tossup;
 
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
@@ -301,6 +302,7 @@ public class Window extends JFrame {
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridwidth = 1;
         questionContainer.add(leadIn, gbc);
+        questionContainer.setBorder(new EmptyBorder(0,10,0,10));
         gbc.fill = GridBagConstraints.HORIZONTAL;
         for (int c = 0; c < 3; c++) {
             int i = c;

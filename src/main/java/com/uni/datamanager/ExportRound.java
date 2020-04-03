@@ -220,7 +220,7 @@ public class ExportRound {
                     row.createCell(off2 + 2).setCellValue(BuzzData.pointVals[data.point]);
                     row.createCell(off2 + 3).setCellValue(tossup.category == null ? "" : tossup.category.toString());
                     row.createCell(off2 + 4).setCellValue(tossup.subcategory);
-                    row.createCell(off2 + 5).setCellValue(tossup.answer.split("[\\[\\(]", 2)[0].replace("ANSWER: ", "").replaceAll("[^\\x00-\\x7F]", ""));
+                    row.createCell(off2 + 5).setCellValue(tossup.answer.split("[\\[\\(]", 2)[0].replace("ANSWER: ", "").replaceAll("[^\\x00-\\x7F]", "").trim());
                     Cell cdepthcell = row.createCell(off2 + 6);
                     cdepthcell.setCellValue((double) qword.wordID / tossup.size);
                     cdepthcell.setCellStyle(numberStyle);

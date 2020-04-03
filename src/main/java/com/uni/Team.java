@@ -32,7 +32,7 @@ public class Team {
     //0 or 1 value
     public int teamId;
 
-    Team(String name, int teamId) {
+    private Team(String name, int teamId) {
         this.name = name;
         this.teamId = teamId;
         //Container for team 1 players
@@ -90,6 +90,7 @@ public class Team {
             }
         } catch (Exception e) {
             e.printStackTrace();
+            Main.errorMessage("teams.txt doesn't exist or formatted poorly");
         }
     }
 

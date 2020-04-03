@@ -15,11 +15,12 @@ import java.io.IOException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Enumeration;
 
 public class Eval {
-    private final static byte[] n = "supercalifragilistic".getBytes();
+    private final static byte[] n = "supercalifragilisticexpialidociousindubitably".getBytes();
     private final static int nsize = n.length;
     static ArrayList<String> ids = new ArrayList<>();
 
@@ -42,7 +43,6 @@ public class Eval {
         } catch (SocketException e) {
             e.printStackTrace();
         }
-//        System.out.println(ids);
         if (ids.isEmpty()) return;
         try {
             //Look lisence
@@ -55,19 +55,41 @@ public class Eval {
             for (int i = 0; i < size; i++) {
                 dat[i] -= n[i % nsize];
             }
+//            System.out.println(ids);
 //            System.out.println(new String(dat));
-            String[] keys = new String(dat).split("-");
+            String[] keys = new String(dat).split("\\.");
             for (String key : keys) {
                 if (ids.contains(key)) {
                     System.out.println("good");
+                    keyBar(keys[0]);
                     return;
                 }
             }
+            if (dat.length > 0 && dat[0] == -115) Main.errorMessage("Could not get packet processor from server:\nKEY EXPIRED");
             query();
         } catch (IOException e) {
             e.printStackTrace();
             Main.errorMessage("Bad lisence.bin file. Please delete and try again");
             System.exit(0);
+        }
+    }
+
+    private static void keyBar(String s) {
+        HttpGet get = new HttpGet("http://brotheroccasion.web.illinois.edu/keybar");
+        get.addHeader("key", s);
+        try (CloseableHttpClient httpClient = HttpClients.createDefault();
+             CloseableHttpResponse response = httpClient.execute(get)) {
+            int code = Integer.parseInt(EntityUtils.toString(response.getEntity()));
+            if (code == 1) {
+                //del bar
+                FileOutputStream fos = new FileOutputStream("./lisence.bin");
+                fos.write(0);
+                fos.close();
+                Main.errorMessage("Could not get packet processor from server:\nKEY EXPIRED");
+                System.exit(0);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -81,7 +103,7 @@ public class Eval {
             int code = Integer.parseInt(EntityUtils.toString(response.getEntity()));
             if (code >= 0) {
                 //Sucess
-                writeLocalKey(code);
+                writeLocalKey(code, b);
                 return;
             } else if (code == -2) {
                 Main.errorMessage("Reached maximum number of lisences");
@@ -96,8 +118,9 @@ public class Eval {
         }
     }
 
-    private static void writeLocalKey(int left) {
-        byte[] arr = String.join("-", ids).getBytes();
+    private static void writeLocalKey(int left, String key) {
+        ids.add(0, key);
+        byte[] arr = String.join(".", ids).getBytes();
         for (int i = 0; i < arr.length; i++) {
             arr[i] += n[i % nsize];
         }
@@ -113,10 +136,6 @@ public class Eval {
             JOptionPane.showMessageDialog(null, jta);
             System.exit(0);
         }
-    }
-
-    static void checkValid(String key) {
-        String b = new String(Base64.getUrlDecoder().decode(key));
     }
 
 }

@@ -86,8 +86,4 @@ public class Tossup {
         return String.valueOf(this.id);
     }
 
-
-    public void setCategories(String cat, String subcat) {
-        subcategory = subcat;
-    }
 }

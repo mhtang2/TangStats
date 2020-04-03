@@ -115,6 +115,97 @@ public class CompileStats {
         for (int i = 0; i <= 8; i++) {
             sheet.autoSizeColumn(i);
         }
+        //Tossups by category
+        HashMap<String, int[]> catMap = new HashMap<>();
+        for (String category : Category.names) {
+            catMap.put(category, new int[5]);
+        }
+        for (ArrayList<TossupStat> roundList : tossupMap.values()) {
+            for (TossupStat stat : roundList) {
+                String cat = stat.cat;
+                String subcat = stat.subcat;
+                if (cat != null && cat.length() > 0) {
+                    int[] arr = catMap.get(cat);
+                    int[] stats = stat.stats;
+                    arr[0] += stats[3];
+                    for (int i = 1; i <= 3; i++) arr[i] += stats[i - 1];
+                    arr[4] += stats[4];
+                }
+                if (subcat != null && subcat.length() > 0) {
+                    int[] arr = catMap.get(subcat);
+                    int[] stats = stat.stats;
+                    arr[0] += stats[3];
+                    for (int i = 1; i <= 3; i++) arr[i] += stats[i - 1];
+                    arr[4] += stats[4];
+                }
+            }
+        }
+        sheet = wb.createSheet("Tossups_by_category");
+        rowNum = 0;
+        row = sheet.createRow(rowNum++);
+        headers = new String[]{"Category", "Rooms heard", "+15", "+10", " -5", "Dead"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = row.createCell(i);
+            cell.setCellStyle(style);
+            cell.setCellValue(headers[i]);
+        }
+        for (String cat : Category.names) {
+            row = sheet.createRow(rowNum++);
+            int offC = 0;
+            row.createCell(0).setCellValue(cat);
+            for (int i = 0; i < 5; i++) {
+                int arr[] = catMap.get(cat);
+                row.createCell(1 + offC++).setCellValue(arr[i]);
+            }
+        }
+        for (int i = 0; i < 6; i++) {
+            sheet.autoSizeColumn(i);
+        }
+
+        //Bonuses by category
+        catMap = new HashMap<>();
+        for (String category : Category.names) {
+            catMap.put(category, new int[5]);
+        }
+        for (ArrayList<BonusStat> roundList : bonusMap.values()) {
+            for (BonusStat stat : roundList) {
+                String cat = stat.cat;
+                String subcat = stat.subcat;
+                if (cat != null && cat.length() > 0) {
+                    int[] arr = catMap.get(cat);
+                    int[] stats = stat.stats;
+                    arr[0] += stats[4];
+                    for (int i = 0; i < 4; i++) arr[i + 1] += stats[i];
+                }
+                if (subcat != null && subcat.length() > 0) {
+                    int[] arr = catMap.get(subcat);
+                    int[] stats = stat.stats;
+                    arr[0] += stats[4];
+                    for (int i = 0; i < 4; i++) arr[i + 1] += stats[i];
+                }
+            }
+        }
+        sheet = wb.createSheet("bonuses_by_category");
+        rowNum = 0;
+        row = sheet.createRow(rowNum++);
+        headers = new String[]{"Category", "Rooms heard", "+15", "+10", " -5", "Dead"};
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = row.createCell(i);
+            cell.setCellStyle(style);
+            cell.setCellValue(headers[i]);
+        }
+        for (String cat : Category.names) {
+            row = sheet.createRow(rowNum++);
+            int offC = 0;
+            row.createCell(0).setCellValue(cat);
+            for (int i = 0; i < 5; i++) {
+                int arr[] = catMap.get(cat);
+                row.createCell(1 + offC++).setCellValue(arr[i]);
+            }
+        }
+        for (int i = 0; i < 6; i++) {
+            sheet.autoSizeColumn(i);
+        }
         writeExport("./exportdata/conversion.xlsx", wb);
     }
 
@@ -184,7 +275,7 @@ public class CompileStats {
         for (TeamStat ts : teamRanked) playerRanked.addAll(ts.players.values());
         sheet = wb.createSheet("PlayerRank_PPTUH");
         column = 0;
-        String[] headers = {"Team:Player", "15", "10", "-5", "Total", "Heard", "cDepth", "PPTUH"};
+        String[] headers = {"Team:Player", "15", "10", " -5", "Total", "Heard", "cDepth", "PPTUH"};
         for (String cat : catsAndTotal) {
             playerRanked.sort((b, a) -> ((int) a.tossupData.get(cat)[5] - (int) b.tossupData.get(cat)[5]));
             rownum = 0;
@@ -306,7 +397,7 @@ public class CompileStats {
                 JOptionPane.showMessageDialog(null, file.getName() + " CORRUPTED", "Warning", JOptionPane.ERROR_MESSAGE);
             }
         }
-        System.out.println(Category.names);
+//        System.out.println(Category.names);
     }
 
     private void buildData(File[] files) {
@@ -321,7 +412,7 @@ public class CompileStats {
                 //Loop through team sheets
                 for (int teamId = 0; teamId < 2; teamId++) {
                     Sheet sheet = wb.getSheetAt(teamId + 1);
-                    System.out.println(sheet.getSheetName());
+//                    System.out.println(sheet.getSheetName());
                     //Set up team info
                     String formatTeam = sheet.getRow(0).getCell(1).getStringCellValue();
                     String pureTeam = pure(formatTeam);
@@ -446,7 +537,7 @@ public class CompileStats {
                 }
             }
         }
-        teams.values().forEach(CompileStats::printTeam);
+//        teams.values().forEach(CompileStats::printTeam);
     }
 
 
