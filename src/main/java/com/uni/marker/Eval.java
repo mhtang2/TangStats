@@ -20,8 +20,7 @@ import java.util.Base64;
 import java.util.Enumeration;
 
 public class Eval {
-    private final static byte[] n = "supercalifragilisticexpialidociousindubitably".getBytes();
-    private final static int nsize = n.length;
+    private static String s = "supercalifragilisticexpialidociousindubitably";
     static ArrayList<String> ids = new ArrayList<>();
 
     public static void eval() {
@@ -53,7 +52,7 @@ public class Eval {
             int size = fis.read(dat);
             fis.close();
             for (int i = 0; i < size; i++) {
-                dat[i] -= n[i % nsize];
+                dat[i] = (byte) (dat[i] ^ n[i % nsize]);
             }
 //            System.out.println(ids);
 //            System.out.println(new String(dat));
@@ -65,7 +64,8 @@ public class Eval {
                     return;
                 }
             }
-            if (dat.length > 0 && dat[0] == -115) Main.errorMessage("Could not get packet processor from server:\nKEY EXPIRED");
+            if (dat.length > 0 && dat[0] == -115)
+                Main.errorMessage("Could not get packet processor from server:\nKEY EXPIRED");
             query();
         } catch (IOException e) {
             e.printStackTrace();
@@ -122,7 +122,7 @@ public class Eval {
         ids.add(0, key);
         byte[] arr = String.join(".", ids).getBytes();
         for (int i = 0; i < arr.length; i++) {
-            arr[i] += n[i % nsize];
+            arr[i] = (byte) (arr[i] ^ n[i % nsize]);
         }
         try {
             File binFile = new File("./lisence.bin");
@@ -137,5 +137,8 @@ public class Eval {
             System.exit(0);
         }
     }
+
+    private final static byte[] n = s.getBytes();
+    private final static int nsize = n.length;
 
 }

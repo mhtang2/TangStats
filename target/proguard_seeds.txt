@@ -1,0 +1,2 @@
+com.uni.Main
+com.uni.Main: void main(java.lang.String[])

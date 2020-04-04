@@ -1,0 +1,291 @@
+com.uni.Main -> com.uni.Main:
+    com.uni.Window window -> a
+    java.awt.Image launcherIcon -> b
+    void <init>() -> <init>
+    void main(java.lang.String[]) -> main
+    void errorMessage(java.lang.String) -> a
+com.uni.PacketProcess -> com.uni.a:
+    java.lang.String cat -> a
+    java.lang.String subcat -> b
+    int[] stats -> c
+    void processFile(java.io.File) -> a
+    void <init>(org.apache.poi.ss.usermodel.Cell,org.apache.poi.ss.usermodel.Cell) -> <init>
+com.uni.PlayerManager -> com.uni.b:
+    javax.swing.ImageIcon xIcon -> a
+    void <init>() -> <init>
+    void updateGraphics() -> a
+com.uni.PlayerManager$1 -> com.uni.c:
+    com.uni.PlayerManager this$0 -> a
+    void <init>(com.uni.PlayerManager) -> <init>
+    void keyPressed(java.awt.event.KeyEvent) -> keyPressed
+com.uni.Team -> com.uni.d:
+    java.awt.Color[] teamColors -> a
+    com.uni.Team[] teams -> b
+    java.util.ArrayList playerList -> c
+    java.util.Map playerData -> d
+    javax.swing.JPanel canvas -> e
+    javax.swing.JTextField nameField -> f
+    com.uni.gui.UILabel teamNameLabel -> j
+    java.lang.String name -> g
+    int[] teamStats -> h
+    int teamId -> i
+    void <init>(java.lang.String,int) -> <init>
+    void resetTeams() -> a
+    void reconstructCanvas() -> b
+    void addPlayerContainer(java.lang.String,boolean) -> a
+    void addPlayer(java.lang.String) -> a
+    void calculateStats() -> c
+    void resetScores() -> d
+    void lambda$addPlayerContainer$3(java.lang.String,javax.swing.JToggleButton,java.awt.event.ItemEvent) -> a
+    void lambda$new$2(java.awt.event.MouseEvent) -> a
+    void lambda$new$1(java.awt.event.ActionEvent) -> a
+    void lambda$new$0(java.awt.event.MouseEvent) -> b
+    void <clinit>() -> <clinit>
+com.uni.Team$1 -> com.uni.e:
+    java.lang.String val$playerName -> a
+    javax.swing.JPanel val$playerContainer -> b
+    com.uni.Team this$0 -> c
+    void <init>(com.uni.Team,java.lang.String,javax.swing.JPanel) -> <init>
+    void mousePressed(java.awt.event.MouseEvent) -> mousePressed
+com.uni.Window -> com.uni.f:
+    java.awt.Font defFont -> a
+    java.awt.Font boldFont -> b
+    boolean tossupMode -> g
+    int roundNumber -> c
+    com.uni.PlayerManager playermanager -> d
+    com.uni.gui.UILabel fileStatus -> h
+    com.uni.gui.UIButton toggleBonusButton -> i
+    com.uni.gui.UILabel questionStatus -> j
+    com.uni.gui.UILabel teamControlLabel -> k
+    javax.swing.JCheckBox deadToggle -> l
+    javax.swing.JPanel questionContainer -> m
+    javax.swing.JFileChooser filechoose -> n
+    javax.swing.JPanel scoreBoard -> o
+    javax.swing.JPanel bottomContainer -> p
+    com.uni.gui.UILabel scoreLabelT1 -> q
+    com.uni.gui.UILabel scoreLabelT2 -> r
+    javax.swing.JComboBox categorySelect -> e
+    javax.swing.JComboBox subcategorySelect -> f
+    javax.swing.JComboBox roundSelect -> s
+    javax.swing.JFrame scoreboard -> t
+    void <init>(int,java.lang.String) -> <init>
+    void setTossup(int) -> b
+    void updateScore(com.uni.Team) -> a
+    void updateScoreboard() -> a
+    void setControllingTeam(int) -> a
+    void lambda$setBonus$12(int,java.awt.event.ActionEvent) -> a
+    void lambda$new$11(java.awt.event.MouseEvent) -> a
+    void lambda$new$10(java.awt.event.ActionEvent) -> a
+    void lambda$new$9(java.awt.event.MouseEvent) -> b
+    void lambda$new$8(java.awt.event.MouseEvent) -> c
+    void lambda$new$7(java.awt.event.MouseEvent) -> d
+    void lambda$new$6(java.awt.event.MouseEvent) -> e
+    void lambda$new$5(java.awt.event.MouseEvent) -> f
+    void lambda$new$4(java.awt.event.ActionEvent) -> b
+    void lambda$new$3(java.awt.event.ItemEvent) -> a
+    void lambda$new$2(java.awt.event.ItemEvent) -> b
+    void lambda$new$1(java.awt.event.MouseEvent) -> g
+    void lambda$new$0(java.awt.event.MouseEvent) -> h
+    javax.swing.JPanel access$000(com.uni.Window) -> a
+    void access$100(com.uni.Window,int) -> a
+    void <clinit>() -> <clinit>
+com.uni.Window$1 -> com.uni.g:
+    void <init>(com.uni.Window) -> <init>
+    void windowClosing(java.awt.event.WindowEvent) -> windowClosing
+com.uni.Window$2 -> com.uni.h:
+    com.uni.Window this$0 -> a
+    void <init>(com.uni.Window) -> <init>
+    void mouseClicked(java.awt.event.MouseEvent) -> mouseClicked
+com.uni.Window$3 -> com.uni.i:
+    com.uni.Window this$0 -> a
+    void <init>(com.uni.Window) -> <init>
+    void keyPressed(java.awt.event.KeyEvent) -> keyPressed
+com.uni.datamanager.CompileStats -> com.uni.a.a:
+    java.util.Map teams -> a
+    java.util.Map tossupMap -> l
+    java.util.Map bonusMap -> m
+    int off2 -> b
+    int off3 -> c
+    int off4 -> d
+    int off_bonus -> n
+    int headerRow -> e
+    int roundSheetHeader -> o
+    org.apache.poi.xssf.usermodel.XSSFWorkbook tossupBook -> f
+    org.apache.poi.ss.usermodel.Sheet tossupSheet -> g
+    org.apache.poi.xssf.usermodel.XSSFCellStyle tossupnumberStyle -> h
+    int tossupSheetRowN -> i
+    int correctlyGenerated -> j
+    int expectedGenerated -> k
+    void <init>() -> <init>
+    void conversionData() -> a
+    void rankTeams() -> b
+    void processRoundSheets(java.io.File[]) -> a
+    void writeExport(java.lang.String,org.apache.poi.xssf.usermodel.XSSFWorkbook) -> a
+    java.lang.String pure(java.lang.String) -> a
+    org.apache.poi.ss.usermodel.Row getRow(org.apache.poi.xssf.usermodel.XSSFSheet,int) -> a
+    int lambda$rankTeams$1(java.lang.String,com.uni.datamanager.PlayerStat,com.uni.datamanager.PlayerStat) -> a
+    int lambda$rankTeams$0(java.lang.String,com.uni.datamanager.TeamStat,com.uni.datamanager.TeamStat) -> a
+    void <clinit>() -> <clinit>
+com.uni.datamanager.CompileWindow -> com.uni.a.b:
+    javax.swing.JFileChooser jfc -> a
+    javax.swing.JTextArea textArea -> b
+    java.io.File[] files -> c
+    void <init>() -> <init>
+    void lambda$new$1(java.awt.event.ActionEvent) -> a
+    void lambda$new$0(java.awt.event.ActionEvent) -> b
+com.uni.datamanager.Counter -> com.uni.a.c:
+    int x -> a
+    void <init>(int) -> <init>
+    void inc() -> a
+com.uni.datamanager.ExportRound -> com.uni.a.d:
+    int off_bonus -> a
+    int off2 -> b
+    int off3 -> c
+    int off4 -> d
+    int headerRow -> e
+    int roundSheetHeader -> f
+    void saveRoundData(javax.swing.JFileChooser) -> a
+    void writeTeamSheet(org.apache.poi.xssf.usermodel.XSSFSheet,com.uni.Team,org.apache.poi.ss.usermodel.CellStyle,org.apache.poi.ss.usermodel.CellStyle) -> a
+    org.apache.poi.ss.usermodel.Row getRow(org.apache.poi.xssf.usermodel.XSSFSheet,int) -> a
+    int[] bonusStats(int) -> a
+    void <clinit>() -> <clinit>
+com.uni.datamanager.PlayerStat -> com.uni.a.e:
+    java.lang.String formattedName -> a
+    java.lang.String teamFormattedName -> b
+    java.util.Map tossupData -> c
+    void <init>(java.lang.String,java.lang.String) -> <init>
+    void incPoints(java.lang.String,int,float,boolean) -> a
+com.uni.datamanager.TeamStat -> com.uni.a.f:
+    java.lang.String formattedName -> a
+    java.util.Map bonusData -> b
+    java.util.Map players -> c
+    void <init>(java.lang.String) -> <init>
+com.uni.datamanager.TossupStat -> com.uni.a.g:
+    java.lang.String cat -> a
+    java.lang.String subcat -> b
+    int[] stats -> c
+    void <init>(org.apache.poi.ss.usermodel.Cell,org.apache.poi.ss.usermodel.Cell) -> <init>
+com.uni.gui.ButtonListener -> com.uni.b.a:
+    void mousePressed(java.awt.event.MouseEvent) -> mousePressed
+    void mouseReleased(java.awt.event.MouseEvent) -> mouseReleased
+    void mouseEntered(java.awt.event.MouseEvent) -> mouseEntered
+    void mouseExited(java.awt.event.MouseEvent) -> mouseExited
+com.uni.gui.UIButton -> com.uni.b.b:
+    java.awt.Color defaultNorm -> a
+    java.awt.Color defaultHover -> d
+    java.awt.Color norm -> b
+    java.awt.Color hover -> c
+    com.uni.gui.UILabel label -> e
+    void <init>(java.lang.String,com.uni.gui.ButtonListener) -> <init>
+    void <init>(java.lang.String) -> <init>
+    void addButtonListener(com.uni.gui.ButtonListener) -> a
+    void setText(java.lang.String) -> a
+    void setNorm(java.awt.Color) -> a
+    void <clinit>() -> <clinit>
+com.uni.gui.UILabel -> com.uni.b.c:
+    void <init>() -> <init>
+    void <init>(java.lang.String) -> <init>
+    void <init>(java.lang.String,boolean) -> <init>
+com.uni.marker.BuzzData -> com.uni.c.a:
+    int[] pointVals -> a
+    java.util.HashMap pointMap -> b
+    int point -> c
+    java.lang.String name -> d
+    int teamId -> e
+    void readConfig(java.lang.String) -> a
+    void <init>(int,java.lang.String,int) -> <init>
+    void <clinit>() -> <clinit>
+com.uni.marker.BuzzData$1 -> com.uni.c.b:
+    void <init>() -> <init>
+com.uni.marker.Eval -> com.uni.c.c:
+    java.lang.String s -> a
+    java.util.ArrayList ids -> b
+    byte[] n -> c
+    int nsize -> d
+    void eval() -> a
+    void writeLocalKey(int,java.lang.String) -> a
+    void <clinit>() -> <clinit>
+com.uni.marker.MarkerContainer -> com.uni.c.d:
+    com.uni.marker.QuestionWord qword -> a
+    int teamId -> b
+    void <init>(com.uni.marker.QuestionWord,int,com.uni.marker.MarkerDialog) -> <init>
+    void update() -> a
+    void lambda$new$2(com.uni.marker.QuestionWord,java.lang.String,int,com.uni.marker.MarkerDialog,java.awt.event.MouseEvent) -> a
+    void lambda$new$1(com.uni.marker.QuestionWord,java.lang.String,int,com.uni.marker.MarkerDialog,java.awt.event.MouseEvent) -> b
+    void lambda$new$0(com.uni.marker.QuestionWord,java.lang.String,int,com.uni.marker.MarkerDialog,java.awt.event.MouseEvent) -> c
+com.uni.marker.MarkerContainer$1 -> com.uni.c.e:
+    com.uni.marker.MarkerDialog val$dialog -> a
+    com.uni.marker.MarkerContainer this$0 -> b
+    void <init>(com.uni.marker.MarkerContainer,com.uni.marker.MarkerDialog) -> <init>
+    void keyPressed(java.awt.event.KeyEvent) -> keyPressed
+com.uni.marker.MarkerDialog -> com.uni.c.f:
+    com.uni.marker.MarkerContainer containerT1 -> a
+    com.uni.marker.MarkerContainer containerT2 -> b
+    void <init>(com.uni.marker.QuestionWord) -> <init>
+    void update() -> a
+com.uni.marker.QuestionWord -> com.uni.c.g:
+    java.awt.Font font -> d
+    com.uni.question.Tossup parentQuestion -> a
+    java.awt.Color defaultBG -> e
+    java.awt.Color hoverBG -> f
+    int wordID -> b
+    com.uni.marker.BuzzData buzzData -> c
+    void handle(com.uni.marker.BuzzData) -> a
+    void <init>(int,java.lang.String,com.uni.question.Tossup) -> <init>
+    java.awt.Color access$000(com.uni.marker.QuestionWord) -> a
+    java.awt.Color access$100(com.uni.marker.QuestionWord) -> b
+    void access$200(com.uni.marker.QuestionWord) -> c
+    void <clinit>() -> <clinit>
+com.uni.marker.QuestionWord$1 -> com.uni.c.h:
+    com.uni.marker.QuestionWord this$0 -> a
+    void <init>(com.uni.marker.QuestionWord) -> <init>
+    void mouseEntered(java.awt.event.MouseEvent) -> mouseEntered
+    void mouseExited(java.awt.event.MouseEvent) -> mouseExited
+    void mouseClicked(java.awt.event.MouseEvent) -> mouseClicked
+com.uni.question.Bonus -> com.uni.d.a:
+    java.awt.Font font -> a
+    com.uni.question.Bonus[] questionSet -> b
+    int setidx -> c
+    java.lang.String leadin -> d
+    java.lang.String[] q -> e
+    java.lang.String[] a -> f
+    int[] score -> g
+    com.uni.question.Category category -> h
+    java.lang.String subcategory -> i
+    int controllingTeam -> j
+    int id -> k
+    void <init>() -> <init>
+    java.lang.String toString() -> toString
+    void <clinit>() -> <clinit>
+com.uni.question.Category -> com.uni.d.b:
+    java.util.ArrayList categories -> a
+    java.util.ArrayList names -> b
+    java.lang.String name -> e
+    java.util.ArrayList subcategories -> c
+    java.lang.String returnSubcat -> d
+    void <init>(java.lang.String) -> <init>
+    void loadCategories(java.lang.String) -> a
+    java.lang.String pure(java.lang.String) -> b
+    int indexOfCat(java.util.ArrayList,java.lang.String) -> a
+    com.uni.question.Category addCategory(java.lang.String,java.lang.String) -> a
+    java.lang.String toString() -> toString
+com.uni.question.Tossup -> com.uni.d.c:
+    com.uni.question.Tossup[] questionSet -> a
+    int setidx -> b
+    int id -> c
+    java.lang.String answer -> d
+    com.uni.marker.QuestionWord[] words -> e
+    int size -> f
+    com.uni.question.Category category -> g
+    java.lang.String subcategory -> h
+    int controllingTeam -> i
+    boolean dead -> j
+    java.util.ArrayList t1Active -> k
+    java.util.ArrayList t2Active -> l
+    java.util.ArrayList getActive(int) -> a
+    void <init>(int,java.lang.String,java.lang.String) -> <init>
+    void setControllingTeam(int) -> b
+    int getCorrespondingBonus() -> a
+    com.uni.question.Tossup current() -> b
+    java.lang.String toString() -> toString
+    void <clinit>() -> <clinit>

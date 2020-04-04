@@ -221,6 +221,7 @@ public class Window extends JFrame {
         JPanel saveContainer = new JPanel();
         UIButton compileButton = new UIButton("Total Summary Tool");
         compileButton.addButtonListener(e -> new CompileWindow());
+        saveContainer.setBackground(UIButton.defaultNorm);
         saveContainer.setLayout(new BoxLayout(saveContainer, BoxLayout.X_AXIS));
         saveContainer.add(new UILabel("Round: "), gbc);
         saveContainer.add(roundSelect, gbc);

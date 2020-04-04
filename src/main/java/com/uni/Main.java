@@ -20,8 +20,8 @@ public class Main {
         Category.loadCategories("/categories");
         BuzzData.readConfig("./config.ini");
         Team.resetTeams();
-        Main.window = new Window(1000, "i read qb questions");
-        test();
+        Main.window = new Window(1000, "i read qb questions | TangStats");
+//        test();
 
     }
 
@@ -30,7 +30,7 @@ public class Main {
     }
 
     private static void test() throws IOException {
-        new CompileStats().compile(new File[]{new File("./funkycats.xlsx"), new File("./round2.xlsx"), new File("./round3.xlsx"), new File("./round22.xlsx")});
+//        new CompileStats().compile(new File[]{new File("./funkycats.xlsx"), new File("./round2.xlsx"), new File("./round3.xlsx"), new File("./round22.xlsx")});
 //        PacketProcess.processFile(new File("./customcats1.pdf"));
 //        window.setTossup(0);
 //        for (int i = 0; i < 5; i++) {
