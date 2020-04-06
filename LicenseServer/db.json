@@ -1,0 +1,20 @@
+{
+  "a4602718c-73a5-11ea-bc55-0242ac130003": {
+    "name": "test",
+    "count": 7,
+    "max": 50,
+    "expired": false
+  },
+  "dylankey": {
+    "name": "dylan",
+    "count": 0,
+    "max": 1,
+    "expired": false
+  },
+  "2256e0f0-7437-11ea-bc55-0242ac130003": {
+    "name": "groger",
+    "count": 1,
+    "max": 14,
+    "expired": false
+  }
+}

@@ -45,7 +45,7 @@ public class PacketProcess {
         bonusStart = Math.min(size, bonusStart);
         Tossup[] tossupSet = new Tossup[bonusStart];
         Bonus[] bonusSet = new Bonus[size - bonusStart];
-        System.out.println(tossupSet.length + " " + bonusSet.length);
+        System.out.println("Tossups: "+tossupSet.length + " Bonuses: " + bonusSet.length);
         //Process tossups
         for (int i = 0; i < bonusStart; i++) {
             int nextIndex = i < size - 1 ? qStart.get(i + 1) : text.length();

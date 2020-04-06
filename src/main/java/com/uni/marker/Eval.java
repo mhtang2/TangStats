@@ -1,6 +1,7 @@
 package com.uni.marker;
 
 import com.uni.Main;
+import com.uni.gui.Messages;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -44,8 +45,7 @@ public class Eval {
         }
         if (ids.isEmpty()) return;
         try {
-            //Look lisence
-            File binFile = new File("./lisence.bin");
+            File binFile = new File(Messages.m1);
             if (!binFile.exists()) binFile.createNewFile();
             FileInputStream fis = new FileInputStream(binFile);
             byte[] dat = new byte[(int) binFile.length()];
@@ -65,27 +65,27 @@ public class Eval {
                 }
             }
             if (dat.length > 0 && dat[0] == -115)
-                Main.errorMessage("Could not get packet processor from server:\nKEY EXPIRED");
+                Main.errorMessage(Messages.m8);
             query();
         } catch (IOException e) {
             e.printStackTrace();
-            Main.errorMessage("Bad lisence.bin file. Please delete and try again");
+            Main.errorMessage(Messages.m9);
             System.exit(0);
         }
     }
 
     private static void keyBar(String s) {
-        HttpGet get = new HttpGet("http://brotheroccasion.web.illinois.edu/keybar");
+        HttpGet get = new HttpGet(Messages.m10);
         get.addHeader("key", s);
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(get)) {
             int code = Integer.parseInt(EntityUtils.toString(response.getEntity()));
             if (code == 1) {
                 //del bar
-                FileOutputStream fos = new FileOutputStream("./lisence.bin");
+                FileOutputStream fos = new FileOutputStream(Messages.m1);
                 fos.write(0);
                 fos.close();
-                Main.errorMessage("Could not get packet processor from server:\nKEY EXPIRED");
+                Main.errorMessage(Messages.m8);
                 System.exit(0);
             }
         } catch (Exception e) {
@@ -94,9 +94,12 @@ public class Eval {
     }
 
     private static void query() {
-        String b = JOptionPane.showInputDialog("License key: ");
-//        HttpGet get = new HttpGet("http://127.0.0.1:8080/lisence");
-        HttpGet get = new HttpGet("http://brotheroccasion.web.illinois.edu/lisence");
+        String b = JOptionPane.showInputDialog(Messages.m3);
+        if(b==null || b.length()<1){
+
+
+        }
+        HttpGet get = new HttpGet(Messages.m7);
         get.addHeader("key", b);
         try (CloseableHttpClient httpClient = HttpClients.createDefault();
              CloseableHttpResponse response = httpClient.execute(get)) {
@@ -106,14 +109,14 @@ public class Eval {
                 writeLocalKey(code, b);
                 return;
             } else if (code == -2) {
-                Main.errorMessage("Reached maximum number of lisences");
+                Main.errorMessage(Messages.m5);
             } else if (code == -1) {
-                Main.errorMessage("Invalid key");
+                Main.errorMessage(Messages.m6);
             }
             System.exit(0);
         } catch (Exception e) {
             e.printStackTrace();
-            Main.errorMessage("Connect to internet before validating lisence!");
+            Main.errorMessage(Messages.m4);
             System.exit(0);
         }
     }
@@ -125,14 +128,14 @@ public class Eval {
             arr[i] = (byte) (arr[i] ^ n[i % nsize]);
         }
         try {
-            File binFile = new File("./lisence.bin");
+            File binFile = new File(Messages.m1);
             FileOutputStream fos = new FileOutputStream(binFile);
             fos.write(arr);
             fos.close();
             JOptionPane.showMessageDialog(null, "Success! You have " + left + " keys left");
         } catch (IOException e) {
             e.printStackTrace();
-            JTextArea jta = new JTextArea("Failed to write lisence.bin, please copy manually into a file called lisence.bin the following key:\n" + new String(arr));
+            JTextArea jta = new JTextArea(Messages.m2 + new String(arr));
             JOptionPane.showMessageDialog(null, jta);
             System.exit(0);
         }
