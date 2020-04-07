@@ -7,6 +7,7 @@ import com.uni.gui.UILabel;
 import com.uni.marker.BuzzData;
 import com.uni.marker.Eval;
 import com.uni.marker.QuestionWord;
+import com.uni.packetimport.PacketProcess;
 import com.uni.question.Bonus;
 import com.uni.question.Category;
 import com.uni.question.Tossup;
@@ -14,6 +15,7 @@ import com.uni.question.Tossup;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.html.HTMLDocument;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
@@ -294,21 +296,24 @@ public class Window extends JFrame {
         questionContainer.removeAll();
         questionContainer.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        JTextArea leadIn = new JTextArea(bonus.leadin);
+        JEditorPane leadIn = new JEditorPane("text/html", bonus.leadin);
+        ((HTMLDocument) leadIn.getDocument()).getStyleSheet().addRule(Bonus.fontRule);
         leadIn.setEditable(false);
-        leadIn.setFont(Bonus.font);
+//        leadIn.setFont(Bonus.font);
         gbc.weightx = 1.0;
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
         gbc.gridwidth = 1;
         questionContainer.add(leadIn, gbc);
-        questionContainer.setBorder(new EmptyBorder(0,10,0,10));
+        questionContainer.setBorder(new EmptyBorder(0, 10, 0, 10));
         gbc.fill = GridBagConstraints.HORIZONTAL;
         for (int c = 0; c < 3; c++) {
             int i = c;
-            JTextArea q = new JTextArea(bonus.q[i].trim() + "\n" + bonus.a[i].trim());
-            q.setFont(Bonus.font);
+            JEditorPane q = new JEditorPane("text/html", bonus.q[i].trim() + "<br>" + bonus.a[i].trim());
+            q.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
+            ((HTMLDocument) q.getDocument()).getStyleSheet().addRule(Bonus.fontRule);
             q.setEditable(false);
 
             JComboBox<String> choose = new JComboBox<>(new String[]{"Dead", Team.teams[0].name, Team.teams[1].name});
@@ -322,6 +327,7 @@ public class Window extends JFrame {
             });
             gbc.gridy++;
             gbc.gridx = 0;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.anchor = GridBagConstraints.WEST;
             questionContainer.add(q, gbc);
             gbc.fill = GridBagConstraints.NONE;
@@ -358,10 +364,10 @@ public class Window extends JFrame {
         for (QuestionWord qw : q.words) {
             questionContainer.add(qw);
         }
-        JTextArea answerT = new JTextArea("\n" + q.answer.replaceAll("\n", ""));
+        JEditorPane answerT = new JEditorPane("text/html", "<br>" + q.answer.replaceAll("\n", ""));
+
+        ((HTMLDocument) answerT.getDocument()).getStyleSheet().addRule(Bonus.fontRule);
         answerT.setEditable(false);
-        answerT.setFont(Bonus.font);
-        answerT.setLineWrap(true);
         answerT.setPreferredSize(new Dimension(getWidth() - 50, 100));
         questionContainer.add(answerT);
         questionContainer.validate();

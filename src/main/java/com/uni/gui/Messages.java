@@ -11,4 +11,5 @@ public class Messages {
     public final static String m8 = "Could not get packet processor from server:\nKEY EXPIRED";
     public final static String m9 = "Bad license.bin file. Please delete and try again";
     public final static String m10 = "http://brotheroccasion.web.illinois.edu/keybar";
+    public final static String ms="supercalifragilisticexpialidociousindubitably";
 }

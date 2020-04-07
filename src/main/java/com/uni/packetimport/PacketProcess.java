@@ -1,5 +1,6 @@
-package com.uni;
+package com.uni.packetimport;
 
+import com.uni.Main;
 import com.uni.question.Bonus;
 import com.uni.question.Category;
 import com.uni.question.Tossup;
@@ -10,7 +11,6 @@ import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +19,9 @@ public class PacketProcess {
     public static void processFile(File file) throws IOException {
         PDDocument doc = PDDocument.load(file);
         PDFTextStripper textStripper = new PDFTextStripper();
-        String text = textStripper.getText(doc);
+        textStripper.setAddMoreFormatting(true);
+        String text = new PDFStyleStripper(doc).getText(doc);
+//        System.out.println(text);
         doc.close();
         Category.loadCategories("/categories");
 
@@ -45,7 +47,7 @@ public class PacketProcess {
         bonusStart = Math.min(size, bonusStart);
         Tossup[] tossupSet = new Tossup[bonusStart];
         Bonus[] bonusSet = new Bonus[size - bonusStart];
-        System.out.println("Tossups: "+tossupSet.length + " Bonuses: " + bonusSet.length);
+        System.out.println("Tossups: " + tossupSet.length + " Bonuses: " + bonusSet.length);
         //Process tossups
         for (int i = 0; i < bonusStart; i++) {
             int nextIndex = i < size - 1 ? qStart.get(i + 1) : text.length();
@@ -61,7 +63,9 @@ public class PacketProcess {
                 String rawAnswer = rawQuestion.substring(answerMatcher.start());
                 Pattern catPattern = Pattern.compile("\\{(.*?)}");
                 Matcher catMatcher = catPattern.matcher(rawAnswer);
-                tossupSet[i] = new Tossup(qId.get(i), rawQuestion.substring(0, answerMatcher.start()), rawAnswer.split("<", 2)[0]);
+                String questionString = formatBold(rawQuestion.substring(0, answerMatcher.start()));
+                String answerString = formatBold(rawAnswer.split("<", 2)[0]);
+                tossupSet[i] = new Tossup(qId.get(i), questionString, answerString);
                 if (catMatcher.find()) {
                     String[] cats = rawAnswer.substring(catMatcher.start() + 1, catMatcher.end() - 1).split(",", 2);
                     String cat = cats[0].trim();
@@ -113,10 +117,10 @@ public class PacketProcess {
                 }
             }
             //Get leadin
-            bonus.leadin = rawQuestion.substring(0, tenIdx[0]);
+            bonus.leadin = formatBold(rawQuestion.substring(0, tenIdx[0]));
             for (int i = 0; i < 3; i++) {
-                bonus.q[i] = rawQuestion.substring(tenIdx[i], answerIdx[i]);
-                bonus.a[i] = rawQuestion.substring(answerIdx[i], i < 2 ? tenIdx[i + 1] : rawQuestion.length());
+                bonus.q[i] = formatBold(rawQuestion.substring(tenIdx[i], answerIdx[i]));
+                bonus.a[i] = formatBold(rawQuestion.substring(answerIdx[i], i < 2 ? tenIdx[i + 1] : rawQuestion.length()));
             }
             bonus.id = 1 + qi - bonusStart;
             bonusSet[qi - bonusStart] = bonus;
@@ -124,5 +128,9 @@ public class PacketProcess {
         Tossup.questionSet = tossupSet;
         Bonus.questionSet = bonusSet;
         Main.window.onCategoryChange();
+    }
+
+    private static String formatBold(String s) {
+        return s.replaceAll("\\$B\\$", "<b>").replaceAll("\\$/B\\$", "</b>");
     }
 }

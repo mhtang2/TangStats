@@ -70,7 +70,7 @@ public class QuestionWord extends JLabel {
     public QuestionWord(int wordID, String word, Tossup parentQuestion) {
         this.wordID = wordID;
         this.parentQuestion = parentQuestion;
-        setText(word.trim());
+        setText("<html>"+word.trim()+"</html>");
         setFont(font);
         setOpaque(true);
         setBackground(defaultBG);

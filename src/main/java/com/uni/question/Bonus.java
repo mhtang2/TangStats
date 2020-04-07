@@ -3,7 +3,7 @@ package com.uni.question;
 import java.awt.*;
 
 public class Bonus {
-    public static Font font = new Font(Font.SERIF, Font.BOLD, 15);
+    public static String fontRule = "body { font-family: Serif; font-size: 17pt; }";
     public static Bonus[] questionSet = {};
     public static int setidx = 0;
     public String leadin;

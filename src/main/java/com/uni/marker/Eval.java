@@ -21,7 +21,6 @@ import java.util.Base64;
 import java.util.Enumeration;
 
 public class Eval {
-    private static String s = "supercalifragilisticexpialidociousindubitably";
     static ArrayList<String> ids = new ArrayList<>();
 
     public static void eval() {
@@ -141,7 +140,7 @@ public class Eval {
         }
     }
 
-    private final static byte[] n = s.getBytes();
+    private final static byte[] n = Messages.ms.getBytes();
     private final static int nsize = n.length;
 
 }
