@@ -59,13 +59,13 @@ public class PacketProcess {
             Pattern answerPattern = Pattern.compile("ANSWER:[^a-zA-Z\\d]", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
             Matcher answerMatcher = answerPattern.matcher(rawQuestion);
             if (answerMatcher.find()) {
-                //Match category
                 String rawAnswer = rawQuestion.substring(answerMatcher.start());
-                Pattern catPattern = Pattern.compile("\\{(.*?)}");
-                Matcher catMatcher = catPattern.matcher(rawAnswer);
                 String questionString = formatBold(rawQuestion.substring(0, answerMatcher.start()));
                 String answerString = formatBold(rawAnswer.split("<", 2)[0]);
                 tossupSet[i] = new Tossup(qId.get(i), questionString, answerString);
+                //Match category
+                Pattern catPattern = Pattern.compile("\\{([^]]+)}");
+                Matcher catMatcher = catPattern.matcher(rawAnswer);
                 if (catMatcher.find()) {
                     String[] cats = rawAnswer.substring(catMatcher.start() + 1, catMatcher.end() - 1).split(",", 2);
                     String cat = cats[0].trim();
@@ -91,8 +91,21 @@ public class PacketProcess {
             String rawQuestion = text.substring(qStart.get(qi), nextIndex);
             //Remove number
 //            rawQuestion = rawQuestion.replaceFirst("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", "");
-            rawQuestion = rawQuestion.split("<", 2)[0];
-
+            String[] rawSplit = rawQuestion.split("<", 2);
+            rawQuestion = rawSplit[0];
+            Pattern catPattern = Pattern.compile("\\{([^]]+)}");
+            Matcher catMatcher = catPattern.matcher(rawSplit[1]);
+            if (catMatcher.find()) {
+                String[] cats = rawSplit[1].substring(catMatcher.start() + 1, catMatcher.end() - 1).split(",", 2);
+                String cat = cats[0].trim();
+                String subcat = null;
+                if (cats.length == 2) {
+                    subcat = cats[1].trim();
+                }
+                Category qcat = Category.addCategory(cat, subcat);
+                bonus.category =qcat;
+                bonus.subcategory = qcat.returnSubcat;
+            }
             //Locate [10]s
             int[] tenIdx = new int[3];
             Pattern tenPattern = Pattern.compile("\\[10]", Pattern.MULTILINE);
@@ -122,6 +135,7 @@ public class PacketProcess {
                 bonus.q[i] = formatBold(rawQuestion.substring(tenIdx[i], answerIdx[i]));
                 bonus.a[i] = formatBold(rawQuestion.substring(answerIdx[i], i < 2 ? tenIdx[i + 1] : rawQuestion.length()));
             }
+
             bonus.id = 1 + qi - bonusStart;
             bonusSet[qi - bonusStart] = bonus;
         }

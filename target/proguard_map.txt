@@ -63,10 +63,10 @@ com.uni.Window -> com.uni.e:
     javax.swing.JComboBox roundSelect -> s
     javax.swing.JFrame scoreboard -> t
     void <init>(int,java.lang.String) -> <init>
-    void setTossup(int) -> b
+    void setTossup(int) -> a
     void updateScore(com.uni.Team) -> a
     void updateScoreboard() -> a
-    void setControllingTeam(int) -> a
+    void setControllingTeam(int) -> b
     void lambda$setBonus$12(int,java.awt.event.ActionEvent) -> a
     void lambda$new$11(java.awt.event.MouseEvent) -> a
     void lambda$new$10(java.awt.event.ActionEvent) -> a
