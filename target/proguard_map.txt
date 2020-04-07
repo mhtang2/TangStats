@@ -4,21 +4,15 @@ com.uni.Main -> com.uni.Main:
     void <init>() -> <init>
     void main(java.lang.String[]) -> main
     void errorMessage(java.lang.String) -> a
-com.uni.PacketProcess -> com.uni.a:
-    java.lang.String cat -> a
-    java.lang.String subcat -> b
-    int[] stats -> c
-    void processFile(java.io.File) -> a
-    void <init>(org.apache.poi.ss.usermodel.Cell,org.apache.poi.ss.usermodel.Cell) -> <init>
-com.uni.PlayerManager -> com.uni.b:
+com.uni.PlayerManager -> com.uni.a:
     javax.swing.ImageIcon xIcon -> a
     void <init>() -> <init>
     void updateGraphics() -> a
-com.uni.PlayerManager$1 -> com.uni.c:
+com.uni.PlayerManager$1 -> com.uni.b:
     com.uni.PlayerManager this$0 -> a
     void <init>(com.uni.PlayerManager) -> <init>
     void keyPressed(java.awt.event.KeyEvent) -> keyPressed
-com.uni.Team -> com.uni.d:
+com.uni.Team -> com.uni.c:
     java.awt.Color[] teamColors -> a
     com.uni.Team[] teams -> b
     java.util.ArrayList playerList -> c
@@ -41,13 +35,13 @@ com.uni.Team -> com.uni.d:
     void lambda$new$1(java.awt.event.ActionEvent) -> a
     void lambda$new$0(java.awt.event.MouseEvent) -> b
     void <clinit>() -> <clinit>
-com.uni.Team$1 -> com.uni.e:
+com.uni.Team$1 -> com.uni.d:
     java.lang.String val$playerName -> a
     javax.swing.JPanel val$playerContainer -> b
     com.uni.Team this$0 -> c
     void <init>(com.uni.Team,java.lang.String,javax.swing.JPanel) -> <init>
     void mousePressed(java.awt.event.MouseEvent) -> mousePressed
-com.uni.Window -> com.uni.f:
+com.uni.Window -> com.uni.e:
     java.awt.Font defFont -> a
     java.awt.Font boldFont -> b
     boolean tossupMode -> g
@@ -89,18 +83,25 @@ com.uni.Window -> com.uni.f:
     javax.swing.JPanel access$000(com.uni.Window) -> a
     void access$100(com.uni.Window,int) -> a
     void <clinit>() -> <clinit>
-com.uni.Window$1 -> com.uni.g:
+com.uni.Window$1 -> com.uni.f:
     void <init>(com.uni.Window) -> <init>
     void windowClosing(java.awt.event.WindowEvent) -> windowClosing
-com.uni.Window$2 -> com.uni.h:
+com.uni.Window$2 -> com.uni.g:
     com.uni.Window this$0 -> a
     void <init>(com.uni.Window) -> <init>
     void mouseClicked(java.awt.event.MouseEvent) -> mouseClicked
-com.uni.Window$3 -> com.uni.i:
+com.uni.Window$3 -> com.uni.h:
     com.uni.Window this$0 -> a
     void <init>(com.uni.Window) -> <init>
     void keyPressed(java.awt.event.KeyEvent) -> keyPressed
-com.uni.datamanager.CompileStats -> com.uni.a.a:
+com.uni.datamanager.BonusStat -> com.uni.a.a:
+    java.lang.String cat -> a
+    java.lang.String subcat -> b
+    int[] stats -> c
+    void <init>(org.apache.poi.ss.usermodel.Cell,org.apache.poi.ss.usermodel.Cell) -> <init>
+    void processFile(java.io.File) -> a
+    java.lang.String formatBold(java.lang.String) -> a
+com.uni.datamanager.CompileStats -> com.uni.a.b:
     java.util.Map teams -> a
     java.util.Map tossupMap -> l
     java.util.Map bonusMap -> m
@@ -126,18 +127,18 @@ com.uni.datamanager.CompileStats -> com.uni.a.a:
     int lambda$rankTeams$1(java.lang.String,com.uni.datamanager.PlayerStat,com.uni.datamanager.PlayerStat) -> a
     int lambda$rankTeams$0(java.lang.String,com.uni.datamanager.TeamStat,com.uni.datamanager.TeamStat) -> a
     void <clinit>() -> <clinit>
-com.uni.datamanager.CompileWindow -> com.uni.a.b:
+com.uni.datamanager.CompileWindow -> com.uni.a.c:
     javax.swing.JFileChooser jfc -> a
     javax.swing.JTextArea textArea -> b
     java.io.File[] files -> c
     void <init>() -> <init>
     void lambda$new$1(java.awt.event.ActionEvent) -> a
     void lambda$new$0(java.awt.event.ActionEvent) -> b
-com.uni.datamanager.Counter -> com.uni.a.c:
+com.uni.datamanager.Counter -> com.uni.a.d:
     int x -> a
     void <init>(int) -> <init>
     void inc() -> a
-com.uni.datamanager.ExportRound -> com.uni.a.d:
+com.uni.datamanager.ExportRound -> com.uni.a.e:
     int off_bonus -> a
     int off2 -> b
     int off3 -> c
@@ -149,18 +150,18 @@ com.uni.datamanager.ExportRound -> com.uni.a.d:
     org.apache.poi.ss.usermodel.Row getRow(org.apache.poi.xssf.usermodel.XSSFSheet,int) -> a
     int[] bonusStats(int) -> a
     void <clinit>() -> <clinit>
-com.uni.datamanager.PlayerStat -> com.uni.a.e:
+com.uni.datamanager.PlayerStat -> com.uni.a.f:
     java.lang.String formattedName -> a
     java.lang.String teamFormattedName -> b
     java.util.Map tossupData -> c
     void <init>(java.lang.String,java.lang.String) -> <init>
     void incPoints(java.lang.String,int,float,boolean) -> a
-com.uni.datamanager.TeamStat -> com.uni.a.f:
+com.uni.datamanager.TeamStat -> com.uni.a.g:
     java.lang.String formattedName -> a
     java.util.Map bonusData -> b
     java.util.Map players -> c
     void <init>(java.lang.String) -> <init>
-com.uni.datamanager.TossupStat -> com.uni.a.g:
+com.uni.datamanager.TossupStat -> com.uni.a.h:
     java.lang.String cat -> a
     java.lang.String subcat -> b
     int[] stats -> c
@@ -241,8 +242,13 @@ com.uni.marker.QuestionWord$1 -> com.uni.c.h:
     void mouseEntered(java.awt.event.MouseEvent) -> mouseEntered
     void mouseExited(java.awt.event.MouseEvent) -> mouseExited
     void mouseClicked(java.awt.event.MouseEvent) -> mouseClicked
-com.uni.question.Bonus -> com.uni.d.a:
-    java.awt.Font font -> a
+com.uni.packetimport.PDFStyleStripper -> com.uni.d.a:
+    java.util.HashSet boldFonts -> a
+    boolean can_bold -> b
+    void <init>(org.apache.pdfbox.pdmodel.PDDocument) -> <init>
+    void writeString(java.lang.String,java.util.List) -> writeString
+com.uni.question.Bonus -> com.uni.e.a:
+    java.lang.String fontRule -> a
     com.uni.question.Bonus[] questionSet -> b
     int setidx -> c
     java.lang.String leadin -> d
@@ -256,7 +262,7 @@ com.uni.question.Bonus -> com.uni.d.a:
     void <init>() -> <init>
     java.lang.String toString() -> toString
     void <clinit>() -> <clinit>
-com.uni.question.Category -> com.uni.d.b:
+com.uni.question.Category -> com.uni.e.b:
     java.util.ArrayList categories -> a
     java.util.ArrayList names -> b
     java.lang.String name -> e
@@ -268,7 +274,7 @@ com.uni.question.Category -> com.uni.d.b:
     int indexOfCat(java.util.ArrayList,java.lang.String) -> a
     com.uni.question.Category addCategory(java.lang.String,java.lang.String) -> a
     java.lang.String toString() -> toString
-com.uni.question.Tossup -> com.uni.d.c:
+com.uni.question.Tossup -> com.uni.e.c:
     com.uni.question.Tossup[] questionSet -> a
     int setidx -> b
     int id -> c

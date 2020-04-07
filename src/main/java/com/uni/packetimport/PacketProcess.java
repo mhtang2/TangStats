@@ -26,7 +26,7 @@ public class PacketProcess {
         Category.loadCategories("/categories");
 
         //Match for 1-20
-        Pattern pattern = Pattern.compile("^([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]", Pattern.MULTILINE);
+        Pattern pattern = Pattern.compile("^(([0-9]|[1-2][0-9])\\.[^a-zA-Z\\d]|\\$B\\$([0-9]|[1-2][0-9])\\.\\$/B\\$[^a-zA-Z\\d]\\$B\\$)", Pattern.MULTILINE);
         Matcher matcher = pattern.matcher(text);
 
         //Hold start index of questions
