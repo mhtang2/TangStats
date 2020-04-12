@@ -21,7 +21,7 @@ public class Main {
         BuzzData.readConfig("./config.ini");
         Team.resetTeams();
         Main.window = new Window(1000, "i read qb questions | TangStats");
-        test();
+//        test();
 
     }
 

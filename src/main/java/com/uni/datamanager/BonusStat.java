@@ -12,7 +12,7 @@ public class BonusStat {
     int[] stats = new int[5];
 
     BonusStat(Cell catcell, Cell subcatcell) {
-        this.cat = catcell == null ? null : catcell.getStringCellValue();
-        this.subcat = subcatcell == null ? null : subcatcell.getStringCellValue();
+        this.cat = catcell == null ? null : catcell.getStringCellValue().replaceAll("[\\r\\n]","");
+        this.subcat = subcatcell == null ? null : subcatcell.getStringCellValue().replaceAll("[\\r\\n]","");
     }
 }

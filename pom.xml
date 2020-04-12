@@ -9,7 +9,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
     <groupId>groupId</groupId>
-    <artifactId>QBmarker</artifactId>
+    <artifactId>TangStats</artifactId>
     <version>1.0-SNAPSHOT</version>
     <dependencies>
         <dependency>

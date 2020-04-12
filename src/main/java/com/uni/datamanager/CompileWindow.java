@@ -3,11 +3,13 @@ package com.uni.datamanager;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 public class CompileWindow extends JDialog {
     JFileChooser jfc = new JFileChooser();
     JTextArea textArea = new JTextArea();
-    File[] files;
+    ArrayList<File> files = new ArrayList<>();
 
     public CompileWindow() {
         JPanel canvas = new JPanel();
@@ -29,11 +31,11 @@ public class CompileWindow extends JDialog {
     }
 
     private void saveFile() {
-        if (files == null || files.length < 1) {
+        if (files == null || files.size() < 1) {
             JOptionPane.showMessageDialog(null, "Pick some round files first!", "Warning", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        new CompileStats().compile(files);
+        new CompileStats().compile(files.toArray(new File[0]));
     }
 
     private void selectFiles() {
@@ -42,13 +44,13 @@ public class CompileWindow extends JDialog {
         jfc.setMultiSelectionEnabled(true);
         int r = jfc.showOpenDialog(null);
         if (r == JFileChooser.APPROVE_OPTION) {
-            files = jfc.getSelectedFiles();
+            files.addAll(Arrays.asList(jfc.getSelectedFiles()));
             StringBuilder sb = new StringBuilder();
             for (File f : jfc.getSelectedFiles()) {
                 sb.append(f.getName());
                 sb.append("\n");
             }
-            textArea.setText(sb.toString());
+            textArea.setText(textArea.getText() + sb.toString());
         }
     }
 }

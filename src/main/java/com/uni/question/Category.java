@@ -60,6 +60,8 @@ public class Category {
     }
 
     public static Category addCategory(String cat, String subcat) {
+        cat = cat.replaceAll("[\\n\\r]", "");
+        subcat = subcat.replaceAll("[\\n\\r]", "");
         String pureCat = pure(cat);
         int idx = indexOfCat(categories, pureCat);
         //Found

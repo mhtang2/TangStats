@@ -45,7 +45,12 @@ public class Eval {
         if (ids.isEmpty()) return;
         try {
             File binFile = new File(Messages.m1);
-            if (!binFile.exists()) binFile.createNewFile();
+            if (!binFile.exists()) {
+                boolean created = binFile.createNewFile();
+                if(!created){
+                    Main.errorMessage("Failed to create license");
+                }
+            }
             FileInputStream fis = new FileInputStream(binFile);
             byte[] dat = new byte[(int) binFile.length()];
             int size = fis.read(dat);
@@ -68,7 +73,7 @@ public class Eval {
             query();
         } catch (IOException e) {
             e.printStackTrace();
-            Main.errorMessage(Messages.m9);
+            Main.errorMessage(e.toString());
             System.exit(0);
         }
     }
@@ -94,8 +99,7 @@ public class Eval {
 
     private static void query() {
         String b = JOptionPane.showInputDialog(Messages.m3);
-        if(b==null || b.length()<1){
-
+        if (b == null || b.length() < 1) {
 
         }
         HttpGet get = new HttpGet(Messages.m7);

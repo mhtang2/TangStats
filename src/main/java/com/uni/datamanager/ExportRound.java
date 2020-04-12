@@ -59,7 +59,7 @@ public class ExportRound {
         }
         filechoose.setFileFilter(new FileNameExtensionFilter(".xlsx", "Excel"));
         filechoose.setCurrentDirectory(new File("/home/me/Documents"));
-        filechoose.setSelectedFile(new File("round" + Main.window.roundNumber + "_" + Team.teams[0].name + "_" + Team.teams[1].name + ".xlsx"));
+        filechoose.setSelectedFile(new File("round" + Main.window.roundNumber + "_" + Team.teams[0].name.replaceAll("[^a-zA-Z\\d]","") + "_" + Team.teams[1].name.replaceAll("[^a-zA-Z\\d]","") + ".xlsx"));
         int r = filechoose.showSaveDialog(null);
         if (r == JFileChooser.APPROVE_OPTION) {
             try {

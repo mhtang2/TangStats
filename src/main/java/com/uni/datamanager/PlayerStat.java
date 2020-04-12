@@ -24,6 +24,7 @@ public class PlayerStat {
     }
 
     void incPoints(String cat, int points, float cdepth, boolean majorCat) {
+        cat = cat.replaceAll("[\\n\\r]","");
         int pointIDX = BuzzData.pointMap.get(points);
         tossupData.get(cat)[pointIDX]++;
         tossupData.get(cat)[3] += points;

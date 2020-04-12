@@ -1,2 +1,24 @@
-uni a, dylan, ethan, jonathan
-uni b, arjun, lawry, janaki, nate, elan
+St. Mark's School of Texas A, Ned Tagtmeier, Aayush Goodapaty, Nicholas Cerny, Han Zhang
+Strake Jesuit A, Robert Condron, Pablo Lloyd, Michael Artlip, Isean Bhalla
+Wayzata A, Ben Weiner, Brian Lin, Cece Shao, Amogh Kulkarni
+Wayzata B, Bryanna Shao, Ashwin Halepet, Emily Liu, Sam Buan
+Stanton College Prep B, Soham Mehra, Aaron Dantzler, Biniam Alaro, Joel Valan
+TAG Magnet A, Jisoo Yoo, Ketan Pamurthy, Jaik Havlick, Andrew Volney
+Detroit Country Day B, Arthur Gayden, Aeres Zhou, Costas Pavlou, Yiou Jiang
+Thomas Jefferson Science & Tech B, Anuraag Kaashyap, Vishal Kanigicherla, Vance Kreider, Kevin Zhang
+Georgetown Day School A, Matt Siff, Alex Moon, Arthur Delot-Vilain, Nathaniel Rosenberg
+Mounds View A, Shardul Rao, Aryan Sehgal, Mike Sprung, Paul Wang
+Thomas Jefferson Science & Tech C, Pratyush Jaishanker, Joshua Lian, Elliot Lee, Elliott Lee
+Thomas Jefferson Science & Tech A, William Wang, Justin Chen, Stefan Calin, Karthik Prasad
+Belmont A, Nathan Sheffield, Seiyoung Jang, Cindy Gao, Kiril Kueppenbender
+"Kaleidoscope", Aidan Nguyen, Daniel Mousavi, Kenny Zhang, Nima Razavi, William Orr
+Saratoga A, Jason Hong, Rohan Kumar, Jeffrey Ma, Brandon Wang
+Richard Montgomery B, Gus Carvell, Alex Pease, Jaewoo Chung, Michael Xie
+Solon A, Shayak Chakrabarti, Grant Maiorana, Pranav Sivaram, Sam Wang
+Richard Montgomery A, Abhinav Karthikeyan, Derek Chu, Justin Posner, Danesh Sivakumar
+Penn Manor A, Connor Mayers
+Plano West "B", Akshay Shyam, Ishaan Roy, Alex Zeng, Milla Wenick, Siddharth Bapat
+Ladue A, Louis Li, Jason Xu, Yuvan Chali, Eric Yin
+Stanford Online A, Karan Gurazada, Josh Rollin, Siddharth Srinivasan, Shiva Oswal
+Acton-Boxborough A, Basil Sousounis, Chris Sousounis
+Centennial B, Mahta Gooya, Adam Knox, Caio Goolsby, Ashwin Iyer

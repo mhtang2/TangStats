@@ -133,6 +133,7 @@ public class CompileStats {
                 }
                 if (subcat != null && subcat.length() > 0) {
                     int[] arr = catMap.get(subcat);
+                    if(arr==null) System.out.println(subcat);
                     int[] stats = stat.stats;
                     arr[0] += stats[3];
                     for (int i = 1; i <= 3; i++) arr[i] += stats[i - 1];
@@ -188,7 +189,7 @@ public class CompileStats {
         sheet = wb.createSheet("bonuses_by_category");
         rowNum = 0;
         row = sheet.createRow(rowNum++);
-        headers = new String[]{"Category", "Rooms heard", "+15", "+10", " -5", "Dead"};
+        headers = new String[]{"Category", "Rooms heard", "30's", "20's", " 10's", "0's"};
         for (int i = 0; i < headers.length; i++) {
             Cell cell = row.createCell(i);
             cell.setCellStyle(style);
@@ -397,7 +398,7 @@ public class CompileStats {
                 JOptionPane.showMessageDialog(null, file.getName() + " CORRUPTED", "Warning", JOptionPane.ERROR_MESSAGE);
             }
         }
-//        System.out.println(Category.names);
+        System.out.println(Category.names);
     }
 
     private void buildData(File[] files) {
@@ -483,14 +484,14 @@ public class CompileStats {
                         int points = (int) row.getCell(off3 + 1).getNumericCellValue();
                         String cat;
                         boolean noCat = true;
-                        if (row.getCell(off3 + 2) != null && (cat = row.getCell(off3 + 2).getStringCellValue()).length() > 0) {
+                        if (row.getCell(off3 + 2) != null && (cat = row.getCell(off3 + 2).getStringCellValue().replaceAll("[\\r\\n]","")).length() > 0) {
                             team.bonusData.get(cat)[0] += points;
                             team.bonusData.get(cat)[1]++;
                             team.bonusData.get("Total")[0] += points;
                             team.bonusData.get("Total")[1]++;
                             noCat = false;
                         }
-                        if (row.getCell(off3 + 3) != null && (cat = row.getCell(off3 + 3).getStringCellValue()).length() > 0) {
+                        if (row.getCell(off3 + 3) != null && (cat = row.getCell(off3 + 3).getStringCellValue().replaceAll("[\\r\\n]","")).length() > 0) {
                             team.bonusData.get(cat)[0] += points;
                             team.bonusData.get(cat)[1]++;
                             noCat = false;
@@ -507,7 +508,7 @@ public class CompileStats {
                     Cell localcell;
                     row = sheet.getRow(headerRow + 1);
                     for (int i = 1; (localcell = row.getCell(off4 + i)) != null; i++) {
-                        localCats.add(localcell.getStringCellValue().trim());
+                        localCats.add(localcell.getStringCellValue().replaceAll("[\\r\\n]",""));
                     }
                     n = headerRow + 3;
                     while ((row = sheet.getRow(n)) != null && row.getCell(off4) != null) {
