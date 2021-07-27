@@ -1,0 +1,5 @@
+theme: jekyll-theme-cayman
+title: TangStats
+description: A simple, powerful program to read packets and track stats for Quizbowl
+github:
+  is_project_page: false
